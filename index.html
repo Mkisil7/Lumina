@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumina Optics | Luxury Eyewear Boutique</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Tailwind Configuration for Custom Colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        luxury: {
+                            base: '#F9F8F6', // Warm off-white
+                            primary: '#2C2C2C', // Soft charcoal
+                            accent: '#D4AF37', // Muted Gold
+                            secondary: '#E5E2DD', // Stone beige
+                            text: '#4A4A4A', // Dark gray text
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Georgia', 'serif'],
+                        sans: ['Helvetica Neue', 'Arial', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Chart Container Styling as per requirements */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        /* Custom Scrollbar for luxury feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F9F8F6;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D4AF37;
+            border-radius: 4px;
+        }
+
+        /* Transition Utilities */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-luxury-base text-luxury-primary font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-luxury-base/95 backdrop-blur-sm border-b border-luxury-secondary shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="navigateTo('home')">
+                    <span class="font-serif text-2xl tracking-widest font-bold text-luxury-primary">LUMINA</span>
+                    <span class="text-luxury-accent text-3xl ml-1">.</span>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8">
+                    <button onclick="navigateTo('home')" class="text-luxury-text hover:text-luxury-accent transition-colors duration-300 font-medium tracking-wide">HOME</button>
+                    <button onclick="navigateTo('shop')" class="text-luxury-text hover:text-luxury-accent transition-colors duration-300 font-medium tracking-wide">COLLECTION</button>
+                    <button onclick="navigateTo('stylist')" class="text-luxury-accent hover:text-luxury-primary transition-colors duration-300 font-medium tracking-wide flex items-center gap-1">✨ AI STYLIST</button>
+                    <button onclick="navigateTo('about')" class="text-luxury-text hover:text-luxury-accent transition-colors duration-300 font-medium tracking-wide">OUR STORY</button>
+                    <button onclick="navigateTo('analytics')" class="text-luxury-text hover:text-luxury-accent transition-colors duration-300 font-medium tracking-wide">CRAFT INSIGHTS</button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button onclick="toggleMobileMenu()" class="text-luxury-primary hover:text-luxury-accent focus:outline-none">
+                        <span class="text-2xl">&#9776;</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-luxury-base border-t border-luxury-secondary">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <button onclick="navigateTo('home'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 text-luxury-text hover:bg-luxury-secondary rounded-md">Home</button>
+                <button onclick="navigateTo('shop'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 text-luxury-text hover:bg-luxury-secondary rounded-md">Collection</button>
+                <button onclick="navigateTo('stylist'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 text-luxury-accent hover:bg-luxury-secondary rounded-md">✨ AI Stylist</button>
+                <button onclick="navigateTo('about'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 text-luxury-text hover:bg-luxury-secondary rounded-md">Our Story</button>
+                <button onclick="navigateTo('analytics'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 text-luxury-text hover:bg-luxury-secondary rounded-md">Insights</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="app-content" class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Content injected via JS -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-luxury-primary text-luxury-secondary py-12 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
+            <div>
+                <h3 class="font-serif text-lg text-luxury-accent mb-4">LUMINA.</h3>
+                <p class="opacity-80 leading-relaxed">Curating the world's finest eyewear for the discerning individual. Trust, passion, and visionary design.</p>
+            </div>
+            <div>
+                <h3 class="font-bold mb-4 tracking-wider">VISIT US</h3>
+                <p class="opacity-80">123 Visionary Way</p>
+                <p class="opacity-80">Design District, NY 10012</p>
+                <p class="opacity-80 mt-2">+1 (555) 019-2024</p>
+            </div>
+            <div>
+                <h3 class="font-bold mb-4 tracking-wider">HOURS</h3>
+                <div class="flex justify-between max-w-xs opacity-80">
+                    <span>Mon - Fri</span>
+                    <span>10:00 - 19:00</span>
+                </div>
+                <div class="flex justify-between max-w-xs opacity-80 mt-1">
+                    <span>Sat</span>
+                    <span>11:00 - 18:00</span>
+                </div>
+            </div>
+        </div>
+        <div class="text-center text-xs opacity-50 mt-12 pt-8 border-t border-gray-700">
+            &copy; 2026 Lumina Optics. All Rights Reserved.
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // --- DATA STORE ---
+        
+        // Products Database
+        const products = [
+            { id: 1, brand: 'ic! berlin', name: 'The Haptic', type: 'Optical', color: 'Black', price: 540, weight: 14, material: 'Stainless Steel', imageColor: '#2C2C2C' },
+            { id: 2, brand: 'ic! berlin', name: 'Urban Pulse', type: 'Sunglasses', color: 'Gold', price: 620, weight: 16, material: 'Stainless Steel', imageColor: '#D4AF37' },
+            { id: 3, brand: 'Tom Ford', name: 'FT5532', type: 'Optical', color: 'Tortoise', price: 495, weight: 28, material: 'Acetate', imageColor: '#5C4033' },
+            { id: 4, brand: 'Tom Ford', name: 'Snowdon', type: 'Sunglasses', color: 'Black', price: 450, weight: 32, material: 'Acetate', imageColor: '#1A1A1A' },
+            { id: 5, brand: 'Talla', name: 'Geometrico', type: 'Optical', color: 'Silver', price: 480, weight: 18, material: 'Titanium', imageColor: '#C0C0C0' },
+            { id: 6, brand: 'Talla', name: 'Sun Architect', type: 'Sunglasses', color: 'Blue', price: 510, weight: 20, material: 'Titanium', imageColor: '#4682B4' },
+            { id: 7, brand: 'Orgreen', name: 'Quantum High', type: 'Optical', color: 'Blue', price: 580, weight: 12, material: 'Titanium', imageColor: '#1E3A8A' },
+            { id: 8, brand: 'Orgreen', name: 'Nordic Light', type: 'Sunglasses', color: 'Silver', price: 610, weight: 15, material: 'Polyamide', imageColor: '#A0AEC0' },
+            { id: 9, brand: 'ic! berlin', name: 'Silk Collection', type: 'Optical', color: 'Gold', price: 590, weight: 11, material: 'Stainless Steel', imageColor: '#C5A000' },
+            { id: 10, brand: 'Tom Ford', name: 'Blue Block', type: 'Optical', color: 'Black', price: 420, weight: 30, material: 'Acetate', imageColor: '#000000' },
+            { id: 11, brand: 'Orgreen', name: 'Havana Nights', type: 'Sunglasses', color: 'Tortoise', price: 550, weight: 19, material: 'Titanium', imageColor: '#8B4513' },
+            { id: 12, brand: 'Talla', name: 'Modernist', type: 'Optical', color: 'Tortoise', price: 460, weight: 22, material: 'Acetate', imageColor: '#6F4E37' }
+        ];
+
+        // State Management
+        let appState = {
+            currentPage: 'home',
+            filters: {
+                brand: 'All',
+                color: 'All',
+                type: 'All'
+            },
+            sortBy: 'featured'
+        };
+
+        // Gemini API Setup
+        const apiKey = "";
+
+        // --- NAVIGATION LOGIC ---
+
+        function navigateTo(pageId) {
+            appState.currentPage = pageId;
+            const contentDiv = document.getElementById('app-content');
+            
+            // Fade out effect
+            contentDiv.style.opacity = '0';
+            
+            setTimeout(() => {
+                renderPage(pageId);
+                window.scrollTo(0, 0);
+                contentDiv.style.opacity = '1';
+                contentDiv.style.transition = 'opacity 0.3s ease-in';
+            }, 200);
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function renderPage(pageId) {
+            const contentDiv = document.getElementById('app-content');
+            contentDiv.innerHTML = ''; // Clear current content
+
+            switch(pageId) {
+                case 'home':
+                    renderHome(contentDiv);
+                    break;
+                case 'shop':
+                    renderShop(contentDiv);
+                    break;
+                case 'stylist':
+                    renderStylist(contentDiv);
+                    break;
+                case 'about':
+                    renderAbout(contentDiv);
+                    break;
+                case 'analytics':
+                    renderAnalytics(contentDiv);
+                    break;
+                default:
+                    renderHome(contentDiv);
+            }
+        }
+
+        // --- PAGE RENDERERS ---
+
+        function renderHome(container) {
+            container.innerHTML = `
+                <!-- Hero Section -->
+                <section class="relative bg-luxury-secondary rounded-xl overflow-hidden shadow-lg mb-16 fade-in">
+                    <div class="absolute inset-0 bg-gradient-to-r from-luxury-primary/10 to-transparent"></div>
+                    <div class="relative z-10 px-8 py-24 md:py-32 flex flex-col items-start justify-center text-center md:text-left">
+                        <h2 class="font-serif text-xl text-luxury-accent tracking-widest mb-4">EST. 2005</h2>
+                        <h1 class="font-serif text-4xl md:text-6xl text-luxury-primary font-bold mb-6 leading-tight">
+                            Clarify Your<br/>Perspective.
+                        </h1>
+                        <p class="text-luxury-text text-lg mb-8 max-w-lg">
+                            Discover an exclusive curation of the world's finest optical engineering. 
+                            Featuring ic! berlin, Tom Ford, and more.
+                        </p>
+                        <button onclick="navigateTo('shop')" class="bg-luxury-primary text-white px-8 py-4 rounded-sm hover:bg-luxury-accent transition-colors duration-300 tracking-wider font-bold shadow-md">
+                            EXPLORE THE COLLECTION
+                        </button>
+                    </div>
+                    <!-- Decorative Circle representing a lens -->
+                    <div class="absolute -right-20 -bottom-40 w-96 h-96 rounded-full border-[30px] border-white opacity-20 hidden md:block"></div>
+                </section>
+
+                <!-- Featured Brands Strip -->
+                <section class="mb-20 text-center fade-in">
+                    <p class="text-sm font-bold tracking-widest text-luxury-text/50 mb-8 uppercase">Our Partners</p>
+                    <div class="flex flex-wrap justify-center gap-12 md:gap-24 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+                        <div class="text-xl font-bold font-serif">ic! berlin</div>
+                        <div class="text-xl font-bold font-serif">TOM FORD</div>
+                        <div class="text-xl font-bold font-serif">TALLA</div>
+                        <div class="text-xl font-bold font-serif">ØRGREEN</div>
+                    </div>
+                </section>
+
+                <!-- Featured Products Preview -->
+                <section class="mb-16 fade-in">
+                    <div class="flex justify-between items-end mb-8">
+                        <div>
+                            <h2 class="text-3xl font-serif text-luxury-primary mb-2">Curated Highlights</h2>
+                            <p class="text-luxury-text text-sm max-w-md">Handpicked frames that define the season's aesthetic.</p>
+                        </div>
+                        <button onclick="navigateTo('shop')" class="text-luxury-accent hover:text-luxury-primary font-bold text-sm tracking-wide border-b border-luxury-accent pb-1">VIEW ALL</button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        ${products.slice(0, 3).map(product => createProductCard(product)).join('')}
+                    </div>
+                </section>
+                
+                <!-- CTA Banner -->
+                <section class="bg-luxury-primary text-luxury-base p-12 rounded-xl text-center md:flex md:justify-between md:items-center fade-in">
+                    <div class="md:text-left mb-6 md:mb-0">
+                        <h3 class="text-2xl font-serif mb-2">Not sure what fits?</h3>
+                        <p class="opacity-80">Explore our data-driven insights to find the perfect weight and material for your lifestyle.</p>
+                    </div>
+                    <button onclick="navigateTo('analytics')" class="border border-luxury-accent text-luxury-accent px-8 py-3 rounded-sm hover:bg-luxury-accent hover:text-white transition-all duration-300">
+                        VIEW FRAME ANALYTICS
+                    </button>
+                </section>
+            `;
+        }
+
+        function renderShop(container) {
+            // Filter Logic
+            let filteredProducts = products.filter(p => {
+                return (appState.filters.brand === 'All' || p.brand === appState.filters.brand) &&
+                       (appState.filters.color === 'All' || p.color === appState.filters.color) &&
+                       (appState.filters.type === 'All' || p.type === appState.filters.type);
+            });
+
+            // Sort Logic
+            if (appState.sortBy === 'priceAsc') {
+                filteredProducts.sort((a, b) => a.price - b.price);
+            } else if (appState.sortBy === 'priceDesc') {
+                filteredProducts.sort((a, b) => b.price - a.price);
+            } else if (appState.sortBy === 'az') {
+                filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+            }
+
+            // Extract unique options for filters
+            const brands = ['All', ...new Set(products.map(p => p.brand))];
+            const colors = ['All', ...new Set(products.map(p => p.color))];
+            const types = ['All', ...new Set(products.map(p => p.type))];
+
+            container.innerHTML = `
+                <div class="mb-10 text-center fade-in">
+                    <h1 class="text-4xl font-serif text-luxury-primary mb-4">The Collection</h1>
+                    <p class="text-luxury-text max-w-2xl mx-auto">
+                        Browse our extensive catalog of premium eyewear. Use the filters below to refine your search by brand, aesthetic, or function.
+                    </p>
+                </div>
+
+                <div class="flex flex-col lg:flex-row gap-8 fade-in">
+                    <!-- Sidebar Filters -->
+                    <aside class="w-full lg:w-1/4 bg-white p-6 rounded-lg shadow-sm h-fit sticky top-24">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-bold tracking-widest uppercase text-sm">Filters</h3>
+                            <button onclick="resetFilters()" class="text-xs text-luxury-accent hover:underline">Reset</button>
+                        </div>
+                        
+                        <!-- Brand Filter -->
+                        <div class="mb-6">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Brand</label>
+                            <select onchange="updateFilter('brand', this.value)" class="w-full bg-luxury-base border border-gray-200 rounded p-2 text-sm focus:border-luxury-accent focus:ring-0 outline-none">
+                                ${brands.map(b => `<option value="${b}" ${appState.filters.brand === b ? 'selected' : ''}>${b}</option>`).join('')}
+                            </select>
+                        </div>
+
+                        <!-- Type Filter -->
+                        <div class="mb-6">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Type</label>
+                            <div class="space-y-2">
+                                ${types.map(t => `
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="radio" name="type" value="${t}" onchange="updateFilter('type', this.value)" ${appState.filters.type === t ? 'checked' : ''} class="text-luxury-accent focus:ring-luxury-accent">
+                                        <span class="text-sm">${t}</span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Color Filter -->
+                        <div class="mb-6">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Color</label>
+                            <div class="flex flex-wrap gap-2">
+                                ${colors.filter(c => c !== 'All').map(c => `
+                                    <button onclick="updateFilter('color', '${appState.filters.color === c ? 'All' : c}')" 
+                                        class="w-6 h-6 rounded-full border ${appState.filters.color === c ? 'ring-2 ring-luxury-accent ring-offset-2' : 'border-gray-200'}"
+                                        style="background-color: ${getColorHex(c)}"
+                                        title="${c}"
+                                    ></button>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div class="pt-6 border-t border-gray-100">
+                             <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Sort By</label>
+                             <select onchange="updateSort(this.value)" class="w-full bg-luxury-base border border-gray-200 rounded p-2 text-sm">
+                                <option value="featured" ${appState.sortBy === 'featured' ? 'selected' : ''}>Featured</option>
+                                <option value="priceAsc" ${appState.sortBy === 'priceAsc' ? 'selected' : ''}>Price: Low to High</option>
+                                <option value="priceDesc" ${appState.sortBy === 'priceDesc' ? 'selected' : ''}>Price: High to Low</option>
+                                <option value="az" ${appState.sortBy === 'az' ? 'selected' : ''}>Name: A - Z</option>
+                             </select>
+                        </div>
+                    </aside>
+
+                    <!-- Product Grid -->
+                    <div class="w-full lg:w-3/4">
+                        <div class="mb-4 text-sm text-gray-500">
+                            Showing <span class="font-bold text-luxury-primary">${filteredProducts.length}</span> results
+                        </div>
+                        
+                        ${filteredProducts.length > 0 ? `
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                ${filteredProducts.map(product => createProductCard(product)).join('')}
+                            </div>
+                        ` : `
+                            <div class="flex flex-col items-center justify-center h-64 bg-white rounded-lg border border-dashed border-gray-300">
+                                <span class="text-4xl mb-4 text-gray-300">☹</span>
+                                <h3 class="text-lg font-medium text-gray-600">No frames match your criteria.</h3>
+                                <button onclick="resetFilters()" class="mt-4 text-luxury-accent underline">Clear all filters</button>
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderAbout(container) {
+            container.innerHTML = `
+                <div class="max-w-4xl mx-auto fade-in">
+                    <div class="text-center mb-16">
+                        <h1 class="text-4xl md:text-5xl font-serif text-luxury-primary mb-6">Built on Trust & Passion</h1>
+                        <div class="w-24 h-1 bg-luxury-accent mx-auto"></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-20">
+                        <div class="bg-luxury-secondary h-80 rounded-lg flex items-center justify-center">
+                            <!-- Simulated Image Placeholder -->
+                            <div class="text-center p-8">
+                                <span class="text-6xl text-luxury-primary opacity-20 block mb-4">❝❞</span>
+                                <p class="font-serif italic text-luxury-text">"Eyewear is not just an accessory. It is the framework through which you see the world."</p>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-serif mb-4 text-luxury-primary">Our Difference</h3>
+                            <p class="text-luxury-text leading-relaxed mb-6">
+                                Unlike mass-market retailers, Lumina Optics is a sanctuary for independent eyewear design. 
+                                We have spent over two decades cultivating relationships with small-batch artisans in Berlin, Copenhagen, and Italy.
+                            </p>
+                            <p class="text-luxury-text leading-relaxed">
+                                We believe in "Slow Fashion" for your face. Every frame in our collection is chosen for its engineering integrity, 
+                                material quality, and timeless aesthetic. When you choose Lumina, you aren't just buying glasses; 
+                                you are investing in a piece of functional art.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-lg shadow-sm border-t-4 border-luxury-accent">
+                        <h3 class="text-xl font-bold mb-6 text-center">The Lumina Promise</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                            <div>
+                                <div class="text-3xl mb-2">✦</div>
+                                <h4 class="font-bold text-sm uppercase mb-2">Authenticity</h4>
+                                <p class="text-sm text-gray-600">Authorized retailer for every brand we carry. 100% genuine.</p>
+                            </div>
+                            <div>
+                                <div class="text-3xl mb-2">⚒</div>
+                                <h4 class="font-bold text-sm uppercase mb-2">Craftsmanship</h4>
+                                <p class="text-sm text-gray-600">We only stock frames made from premium acetate, titanium, and steel.</p>
+                            </div>
+                            <div>
+                                <div class="text-3xl mb-2">♥</div>
+                                <h4 class="font-bold text-sm uppercase mb-2">Care</h4>
+                                <p class="text-sm text-gray-600">Lifetime adjustments and comprehensive fitting support.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderAnalytics(container) {
+            container.innerHTML = `
+                <div class="fade-in">
+                    <div class="mb-10 text-center">
+                        <h1 class="text-3xl font-serif text-luxury-primary mb-4">Technical Insights</h1>
+                        <p class="text-luxury-text max-w-2xl mx-auto">
+                            We believe an informed choice is the best choice. Explore the data behind our collection 
+                            to understand the weight profiles and brand popularity of our curated selection.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                        <!-- Chart 1: Weight Distribution -->
+                        <div class="bg-white p-6 rounded-lg shadow-sm border border-luxury-secondary">
+                            <h3 class="font-bold text-lg mb-2 text-luxury-primary">Featherweight Engineering</h3>
+                            <p class="text-sm text-gray-500 mb-6">Average frame weight (grams) by brand. Lower is lighter.</p>
+                            
+                            <div class="chart-container">
+                                <canvas id="weightChart"></canvas>
+                            </div>
+                            
+                            <div class="mt-4 bg-luxury-base p-4 rounded text-sm text-gray-600">
+                                <strong>Insight:</strong> <span class="text-luxury-accent font-bold">ic! berlin</span> and <span class="text-luxury-accent font-bold">Orgreen</span> 
+                                lead the industry in lightweight titanium and sheet metal construction, perfect for all-day comfort.
+                            </div>
+                        </div>
+
+                        <!-- Chart 2: Material Composition -->
+                        <div class="bg-white p-6 rounded-lg shadow-sm border border-luxury-secondary">
+                            <h3 class="font-bold text-lg mb-2 text-luxury-primary">Collection Composition</h3>
+                            <p class="text-sm text-gray-500 mb-6">Distribution of frame materials across our inventory.</p>
+                            
+                            <div class="chart-container">
+                                <canvas id="materialChart"></canvas>
+                            </div>
+
+                            <div class="mt-4 bg-luxury-base p-4 rounded text-sm text-gray-600">
+                                <strong>Insight:</strong> We prioritize <span class="text-luxury-accent font-bold">Titanium</span> and <span class="text-luxury-accent font-bold">Acetate</span> 
+                                for their durability and hypoallergenic properties, ensuring longevity.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Tech Specs Table -->
+                    <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-luxury-secondary">
+                        <div class="p-6 border-b border-luxury-secondary">
+                            <h3 class="font-bold text-lg text-luxury-primary">Brand Tech Specs Comparison</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm text-left">
+                                <thead class="bg-luxury-base text-gray-500 uppercase font-bold text-xs">
+                                    <tr>
+                                        <th class="px-6 py-4">Brand</th>
+                                        <th class="px-6 py-4">Primary Origin</th>
+                                        <th class="px-6 py-4">Signature Tech</th>
+                                        <th class="px-6 py-4">Avg Price Point</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-luxury-secondary">
+                                    <tr>
+                                        <td class="px-6 py-4 font-bold">ic! berlin</td>
+                                        <td class="px-6 py-4">Germany</td>
+                                        <td class="px-6 py-4">Screwless Hinge</td>
+                                        <td class="px-6 py-4">$$$</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 font-bold">Tom Ford</td>
+                                        <td class="px-6 py-4">Italy</td>
+                                        <td class="px-6 py-4">Iconic 'T' Branding</td>
+                                        <td class="px-6 py-4">$$</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 font-bold">Orgreen</td>
+                                        <td class="px-6 py-4">Japan / Denmark</td>
+                                        <td class="px-6 py-4">Beta-Titanium</td>
+                                        <td class="px-6 py-4">$$$</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 font-bold">Talla</td>
+                                        <td class="px-6 py-4">Italy / France</td>
+                                        <td class="px-6 py-4">Geometric Sculpting</td>
+                                        <td class="px-6 py-4">$$</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Wait for DOM to update then render charts
+            setTimeout(() => {
+                renderCharts();
+            }, 100);
+        }
+
+        function renderStylist(container) {
+            container.innerHTML = `
+                <div class="max-w-4xl mx-auto fade-in">
+                    <div class="text-center mb-10">
+                        <h1 class="text-4xl font-serif text-luxury-primary mb-4 flex justify-center items-center gap-3">
+                            <span class="text-luxury-accent">✨</span> Personal AI Stylist
+                        </h1>
+                        <p class="text-luxury-text max-w-2xl mx-auto">
+                            Describe your facial features, personal style, and what you're looking for. 
+                            Our AI will curate the perfect frames from our collection just for you.
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-lg shadow-sm border border-luxury-secondary mb-10">
+                        <textarea id="stylePrompt" rows="4" class="w-full bg-luxury-base border border-gray-200 rounded p-4 text-sm focus:border-luxury-accent focus:ring-1 focus:ring-luxury-accent outline-none transition-all resize-none mb-4" placeholder="E.g., I have a square face and I work in a creative agency. I want something bold but professional, preferably in a dark color..."></textarea>
+                        <button id="stylistBtn" onclick="handleStyleSubmit()" class="w-full bg-luxury-primary text-white py-4 font-bold tracking-wider hover:bg-luxury-accent transition-colors duration-300 flex justify-center items-center gap-2">
+                            <span>DISCOVER MY FRAMES</span> <span class="text-xl">✨</span>
+                        </button>
+                    </div>
+
+                    <div id="stylistResults" class="hidden">
+                        <!-- Results injected here -->
+                    </div>
+                </div>
+            `;
+        }
+
+        async function handleStyleSubmit() {
+            const promptInput = document.getElementById('stylePrompt').value;
+            const resultsDiv = document.getElementById('stylistResults');
+            const btn = document.getElementById('stylistBtn');
+
+            if (!promptInput.trim()) return;
+
+            // Loading state
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>CURATING YOUR LOOK...</span>`;
+            resultsDiv.classList.remove('hidden');
+            resultsDiv.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-12 text-luxury-text opacity-70 fade-in">
+                    <div class="text-4xl mb-4 animate-pulse">✨</div>
+                    <p class="tracking-widest text-sm uppercase">Analyzing profile...</p>
+                </div>
+            `;
+
+            try {
+                // Prepare context for the LLM
+                const inventoryJSON = JSON.stringify(products.map(p => ({
+                    id: p.id, brand: p.brand, name: p.name, type: p.type, color: p.color, material: p.material
+                })));
+
+                const systemInstruction = `You are an elite, high-end eyewear stylist at Lumina Optics. 
+                Based on the user's description of their style, face shape, and needs, select 2 to 3 frames from our inventory that fit them best.
+                Inventory: ${inventoryJSON}
+                Be luxurious, confident, and highly personalized in your 'introMessage'. Explain exactly why each frame works for them in the 'reason'.`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: promptInput }] }],
+                    systemInstruction: { parts: [{ text: systemInstruction }] },
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                introMessage: { type: "STRING" },
+                                recommendations: {
+                                    type: "ARRAY",
+                                    items: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            productId: { type: "INTEGER" },
+                                            reason: { type: "STRING" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+
+                const response = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                if (data.error) throw new Error(data.error.message);
+                
+                const aiResult = JSON.parse(data.candidates[0].content.parts[0].text);
+
+                // Render Results
+                let recommendationsHTML = aiResult.recommendations.map(rec => {
+                    const product = products.find(p => p.id === rec.productId);
+                    if (!product) return '';
+                    return `
+                        <div class="flex flex-col md:flex-row gap-8 bg-white p-6 rounded-lg border border-luxury-secondary shadow-sm mb-6 fade-in">
+                            <div class="w-full md:w-1/3">
+                                ${createProductCard(product)}
+                            </div>
+                            <div class="w-full md:w-2/3 flex flex-col justify-center">
+                                <h4 class="font-serif text-xl text-luxury-primary mb-3">Why this fits you:</h4>
+                                <p class="text-luxury-text leading-relaxed italic border-l-2 border-luxury-accent pl-5 py-2">"${rec.reason}"</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                resultsDiv.innerHTML = `
+                    <div class="fade-in mb-10">
+                        <div class="bg-luxury-secondary/30 p-8 rounded-lg border-t-4 border-luxury-accent">
+                            <p class="font-serif text-xl leading-relaxed text-luxury-primary">"${aiResult.introMessage}"</p>
+                            <p class="text-sm font-bold tracking-widest uppercase mt-4 text-luxury-accent">— Your Virtual Stylist</p>
+                        </div>
+                    </div>
+                    <div>${recommendationsHTML}</div>
+                `;
+
+            } catch (error) {
+                console.error("Gemini API Error:", error);
+                resultsDiv.innerHTML = `
+                    <div class="bg-red-50 text-red-500 p-4 rounded text-center border border-red-200">
+                        We apologize, but our stylist is currently unavailable. Please try again later.
+                    </div>
+                `;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<span>DISCOVER MY FRAMES</span> <span class="text-xl">✨</span>`;
+            }
+        }
+
+        async function fetchWithRetry(url, options, retries = 5) {
+            const delays = [1000, 2000, 4000, 8000, 16000];
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return response;
+                } catch (e) {
+                    if (i === retries - 1) throw e;
+                    await new Promise(res => setTimeout(res, delays[i]));
+                }
+            }
+        }
+
+        // --- HELPER FUNCTIONS ---
+
+        function createProductCard(product) {
+            return `
+                <div class="group bg-white rounded-lg border border-luxury-secondary overflow-hidden hover:shadow-lg transition-all duration-300">
+                    <!-- Simulated Image Area -->
+                    <div class="h-56 w-full flex items-center justify-center relative overflow-hidden bg-gray-50">
+                         <!-- Visual representation of the glasses using CSS shapes/colors -->
+                         <div class="transition-transform duration-500 transform group-hover:scale-110">
+                            <div style="
+                                width: 140px; 
+                                height: 50px; 
+                                border: 4px solid ${product.imageColor}; 
+                                border-radius: ${product.type === 'Sunglasses' ? '10px' : '20px'};
+                                position: relative;
+                                box-shadow: 2px 4px 10px rgba(0,0,0,0.1);
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                            ">
+                                <div style="width: 20px; height: 4px; background: ${product.imageColor}; position: absolute; left: 45%; top: 40%;"></div> <!-- Bridge -->
+                            </div>
+                            <div class="mt-4 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <span class="bg-luxury-primary text-white text-xs px-2 py-1 uppercase tracking-widest">Quick View</span>
+                            </div>
+                         </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">${product.brand}</span>
+                            <span class="text-sm font-medium text-luxury-accent">$${product.price}</span>
+                        </div>
+                        <h3 class="text-lg font-serif font-bold text-luxury-primary mb-1">${product.name}</h3>
+                        <p class="text-sm text-gray-500 mb-4">${product.color} | ${product.material}</p>
+                        
+                        <button onclick="alert('Added ${product.name} to cart!')" class="w-full border border-luxury-primary text-luxury-primary py-2 text-sm uppercase font-bold hover:bg-luxury-primary hover:text-white transition-colors duration-300">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getColorHex(colorName) {
+            const map = {
+                'Black': '#000000',
+                'Gold': '#D4AF37',
+                'Tortoise': '#5C4033',
+                'Silver': '#C0C0C0',
+                'Blue': '#1E3A8A'
+            };
+            return map[colorName] || '#CCCCCC';
+        }
+
+        function updateFilter(key, value) {
+            appState.filters[key] = value;
+            renderShop(document.getElementById('app-content'));
+        }
+
+        function updateSort(value) {
+            appState.sortBy = value;
+            renderShop(document.getElementById('app-content'));
+        }
+
+        function resetFilters() {
+            appState.filters = { brand: 'All', color: 'All', type: 'All' };
+            appState.sortBy = 'featured';
+            renderShop(document.getElementById('app-content'));
+        }
+
+        // --- CHART RENDERING ---
+
+        function renderCharts() {
+            // Data Prep for Weight Chart
+            const brands = ['ic! berlin', 'Tom Ford', 'Talla', 'Orgreen'];
+            const avgWeights = brands.map(brand => {
+                const brandProducts = products.filter(p => p.brand === brand);
+                const sum = brandProducts.reduce((acc, p) => acc + p.weight, 0);
+                return (sum / brandProducts.length).toFixed(1);
+            });
+
+            // Weight Chart
+            const ctxWeight = document.getElementById('weightChart').getContext('2d');
+            new Chart(ctxWeight, {
+                type: 'bar',
+                data: {
+                    labels: brands,
+                    datasets: [{
+                        label: 'Avg Frame Weight (g)',
+                        data: avgWeights,
+                        backgroundColor: ['#E5E7EB', '#2C2C2C', '#D4AF37', '#9CA3AF'],
+                        borderColor: '#2C2C2C',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            title: { display: true, text: 'Grams' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            // Data Prep for Material Chart
+            const materials = [...new Set(products.map(p => p.material))];
+            const materialCounts = materials.map(mat => products.filter(p => p.material === mat).length);
+
+            // Material Chart
+            const ctxMat = document.getElementById('materialChart').getContext('2d');
+            new Chart(ctxMat, {
+                type: 'doughnut',
+                data: {
+                    labels: materials,
+                    datasets: [{
+                        data: materialCounts,
+                        backgroundColor: ['#2C2C2C', '#D4AF37', '#E5E7EB', '#5C4033'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            renderPage('home');
+        };
+
+    </script>
+
+    <!-- 
+    Application Structure Plan:
+    This SPA is structured as a luxury e-commerce experience.
+    1. Navigation: Sticky header for easy access to Home, Shop (Collection), About, and Analytics.
+    2. Home: Functions as a landing page to establish brand identity with a Hero section, Brand logos, and Featured products teaser to guide users to the Shop.
+    3. Shop (Collection): The core functional area. Uses a sidebar layout for robust filtering (Brand, Color, Type) and sorting. The product grid updates dynamically via JavaScript without page reloads, providing a snappy user experience.
+    4. About: Builds trust through storytelling ("Our Story", "Lumina Promise"), crucial for luxury goods.
+    5. Analytics (Craft Insights): A dedicated section to satisfy the visualization requirements, converting technical product data (weight, material) into visual selling points (comfort, durability) using Chart.js.
+    
+    Why this structure?
+    Luxury buyers want both emotional connection (Home/About) and functional clarity (Shop/Analytics). The single-page architecture allows seamless transitions between "feeling" the brand and "analyzing" the product.
+    -->
+
+    <!-- 
+    Visualization & Content Choices:
+    1. Shop Grid: The goal is "Shopping". Method: CSS Grid with JS-injected HTML cards. Justification: Standard, familiar e-commerce pattern allows for efficient scanning of products.
+    2. Weight Chart (Bar Chart): Goal: "Inform/Compare". Shows how light specific brands are (e.g., ic! berlin). Interaction: Tooltip hover. Justification: Weight is a key comfort metric for glasses; a visual comparison proves the "luxury" value of technical materials.
+    3. Material Composition (Doughnut Chart): Goal: "Inform". Shows the use of premium materials (Titanium, Acetate). Justification: Reinforces the quality message visually.
+    4. Tech Specs Table: Goal: "Compare". Quick reference for brand origins and features. Justification: Tabular data is best for comparing discrete attributes like "Country of Origin".
+    -->
+
+    <!-- Chosen Palette: Warm Neutral Luxury (Off-White #F9F8F6 background, Charcoal #2C2C2C primary, Muted Gold #D4AF37 accent) -->
+
+    <!-- CONFIRMATION: NO SVG graphics used (aside from potential future Chart.js Canvas rendering). NO Mermaid JS used. All icons are unicode or CSS shapes. -->
+
+</body>
+</html>
