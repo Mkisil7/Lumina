@@ -4,19 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lumina Optics | Luxury Eyewear Boutique</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Tailwind Configuration for Custom Colors (Mapped to CSS Variables) -->
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
                         luxury: {
-                            base: '#F9F8F6',
-                            primary: '#2C2C2C',
-                            accent: '#D4AF37',
-                            secondary: '#E5E2DD',
-                            text: '#4A4A4A',
+                            base: 'var(--color-base)',
+                            surface: 'var(--color-surface)',
+                            primary: 'var(--color-primary)',
+                            accent: 'var(--color-accent)',
+                            secondary: 'var(--color-secondary)',
+                            text: 'var(--color-text)',
                         }
                     },
                     fontFamily: {
@@ -29,91 +33,65 @@
     </script>
     
     <style>
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #F9F8F6; }
-        ::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 4px; }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
+        /* CSS Variables for Light/Dark Mode Palette */
+        :root {
+            --color-base: #F9F8F6;       /* Warm off-white */
+            --color-surface: #FFFFFF;    /* Pure white for cards */
+            --color-primary: #2C2C2C;    /* Soft charcoal */
+            --color-accent: #D4AF37;     /* Muted Gold */
+            --color-secondary: #E5E2DD;  /* Stone beige / Borders */
+            --color-text: #4A4A4A;       /* Dark gray text */
         }
+
+        html.dark {
+            --color-base: #121212;       /* Deep obsidian/black */
+            --color-surface: #1E1E1E;    /* Elevated dark gray for cards */
+            --color-primary: #F9F8F6;    /* Off-white for headings/strong text */
+            --color-accent: #E5C158;     /* Slightly brighter gold for contrast */
+            --color-secondary: #2C2C2C;  /* Charcoal / Borders */
+            --color-text: #B0B0B0;       /* Light gray for readable body text */
+        }
+
+        /* Prevent FOUC (Flash of Unstyled Content) during theme load */
+        html { transition: background-color 0.3s ease, color 0.3s ease; }
+        body { transition: background-color 0.3s ease, color 0.3s ease; }
+
+        /* Custom Scrollbar for luxury feel */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--color-base); }
+        ::-webkit-scrollbar-thumb { background: var(--color-accent); border-radius: 4px; }
+
+        /* Transition Utilities */
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        /* ── Product Detail Modal ── */
-        #product-modal {
-            transition: opacity 0.25s ease, visibility 0.25s ease;
-        }
-        #product-modal.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-        #product-modal:not(.hidden) {
-            opacity: 1;
-            visibility: visible;
-        }
-        #modal-panel {
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
-        }
-        #product-modal.hidden #modal-panel {
-            transform: translateY(40px) scale(0.97);
-            opacity: 0;
-        }
-        #product-modal:not(.hidden) #modal-panel {
-            transform: translateY(0) scale(1);
-            opacity: 1;
-        }
-
-        .frame-svg { filter: drop-shadow(0 4px 12px rgba(0,0,0,0.12)); }
-
-        .prompt-chip {
-            cursor: pointer;
-            border: 1px solid #E5E2DD;
-            background: #fff;
-            color: #4A4A4A;
-            font-size: 0.78rem;
-            padding: 6px 14px;
-            border-radius: 999px;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-        }
-        .prompt-chip:hover { border-color: #D4AF37; color: #D4AF37; background: #FDFBF5; }
-        .prompt-chip.active { background: #2C2C2C; color: #D4AF37; border-color: #2C2C2C; }
-
-        /* Brand section header */
-        .brand-section-header {
-            border-left: 4px solid #D4AF37;
-            padding-left: 1rem;
-        }
-
-        /* Real product image */
-        .product-img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            padding: 1rem;
-            transition: transform 0.4s ease;
-        }
-        .group:hover .product-img { transform: scale(1.05); }
-
-        /* Sync pulse */
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .spin { animation: spin 1s linear infinite; }
     </style>
+
+    <!-- Early Theme Initialization to prevent flickering -->
+    <script>
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
 </head>
-<body class="bg-luxury-base text-luxury-primary font-sans antialiased min-h-screen flex flex-col">
+<body class="bg-luxury-base text-luxury-primary font-sans antialiased min-h-screen flex flex-col transition-colors duration-300">
 
     <!-- Navigation -->
-    <nav class="sticky top-0 z-50 bg-luxury-base/95 backdrop-blur-sm border-b border-luxury-secondary shadow-sm">
+    <nav class="sticky top-0 z-50 bg-luxury-base/95 backdrop-blur-sm border-b border-luxury-secondary shadow-sm transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
                 <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="navigateTo('home')">
-                    <span class="font-serif text-2xl tracking-widest font-bold text-luxury-primary">LUMINA</span>
-                    <span class="text-luxury-accent text-3xl ml-1">.</span>
+                    <span class="font-serif text-2xl tracking-widest font-bold text-luxury-primary transition-colors">LUMINA</span>
+                    <span class="text-luxury-accent text-3xl ml-1 transition-colors">.</span>
                 </div>
-                <div class="hidden md:flex space-x-8">
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8 items-center">
                     <button onclick="navigateTo('home')" class="text-luxury-text hover:text-luxury-accent transition-colors duration-300 font-medium tracking-wide">HOME</button>
                     <button onclick="navigateTo('shop')" class="text-luxury-text hover:text-luxury-accent transition-colors duration-300 font-medium tracking-wide">COLLECTION</button>
                     <button onclick="navigateTo('stylist')" class="text-luxury-accent hover:text-luxury-primary transition-colors duration-300 font-medium tracking-wide flex items-center gap-1">✨ AI STYLIST</button>
@@ -122,20 +100,38 @@
                         CART
                         <span class="cart-count-badge absolute -top-2 -right-3 bg-luxury-accent text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center hidden">0</span>
                     </button>
+                    <!-- Desktop Theme Toggle -->
+                    <button onclick="toggleTheme()" class="text-luxury-text hover:text-luxury-accent transition-colors duration-300 focus:outline-none ml-4" aria-label="Toggle Dark Mode">
+                        <span id="theme-icon-desktop"></span>
+                    </button>
                 </div>
-                <div class="md:hidden flex items-center">
-                    <button onclick="toggleMobileMenu()" class="text-luxury-primary hover:text-luxury-accent focus:outline-none p-2">
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center gap-4">
+                    <!-- Mobile Theme Toggle -->
+                    <button onclick="toggleTheme()" class="text-luxury-primary hover:text-luxury-accent focus:outline-none p-2 transition-colors" aria-label="Toggle Dark Mode">
+                        <span id="theme-icon-mobile"></span>
+                    </button>
+                    <button onclick="navigateTo('cart')" class="text-luxury-primary relative transition-colors">
+                        CART
+                        <span class="cart-count-badge absolute -top-2 -right-3 bg-luxury-accent text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center hidden">0</span>
+                    </button>
+                    <button onclick="toggleMobileMenu()" class="text-luxury-primary hover:text-luxury-accent focus:outline-none p-2 transition-colors">
                         <span class="text-2xl">&#9776;</span>
                     </button>
                 </div>
             </div>
         </div>
-        <div id="mobile-menu" class="hidden md:hidden absolute w-full bg-luxury-base border-t border-luxury-secondary shadow-xl z-40 left-0">
+        
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden absolute w-full bg-luxury-base border-t border-luxury-secondary shadow-xl z-40 left-0 transition-colors duration-300">
             <div class="px-4 pt-2 pb-6 space-y-1">
                 <button onclick="navigateTo('home'); toggleMobileMenu()" class="block w-full text-left px-4 py-4 text-luxury-text hover:bg-luxury-secondary hover:text-luxury-primary rounded-md text-lg font-medium border-b border-luxury-secondary/30 transition-colors">Home</button>
                 <button onclick="navigateTo('shop'); toggleMobileMenu()" class="block w-full text-left px-4 py-4 text-luxury-text hover:bg-luxury-secondary hover:text-luxury-primary rounded-md text-lg font-medium border-b border-luxury-secondary/30 transition-colors">Collection</button>
                 <button onclick="navigateTo('stylist'); toggleMobileMenu()" class="block w-full text-left px-4 py-4 text-luxury-accent hover:bg-luxury-secondary hover:text-luxury-primary rounded-md text-lg font-medium border-b border-luxury-secondary/30 transition-colors">✨ AI Stylist</button>
                 <button onclick="navigateTo('about'); toggleMobileMenu()" class="block w-full text-left px-4 py-4 text-luxury-text hover:bg-luxury-secondary hover:text-luxury-primary rounded-md text-lg font-medium transition-colors">Our Story</button>
+                
+                <!-- Mobile Cart Button (Only visible when items are in cart) -->
                 <button id="mobile-cart-menu-item" onclick="navigateTo('cart'); toggleMobileMenu()" class="hidden w-full text-left px-4 py-4 text-luxury-primary bg-luxury-secondary/30 hover:bg-luxury-secondary rounded-md text-lg font-bold border-t border-luxury-secondary/50 transition-colors justify-between items-center mt-2">
                     <span>View Cart</span>
                     <span id="mobile-cart-count" class="bg-luxury-accent text-white text-[12px] px-2.5 py-0.5 rounded-full">0</span>
@@ -144,795 +140,762 @@
         </div>
     </nav>
 
-    <!-- PRODUCT DETAIL MODAL -->
-    <div id="product-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4" onclick="closeModal(event)">
-        <div class="absolute inset-0 bg-luxury-primary/60 backdrop-blur-sm"></div>
-        <div id="modal-panel" class="relative bg-luxury-base w-full max-w-3xl rounded-xl overflow-hidden shadow-2xl border border-luxury-secondary" onclick="event.stopPropagation()">
-            <button onclick="closeProductModal()" class="absolute top-4 right-5 z-10 text-luxury-text hover:text-luxury-accent text-2xl leading-none transition-colors" aria-label="Close">&times;</button>
-            <div class="flex flex-col md:flex-row">
-                <div id="modal-visual" class="w-full md:w-2/5 bg-white flex items-center justify-center p-12 min-h-[260px] md:min-h-[400px]"></div>
-                <div class="w-full md:w-3/5 p-8 md:p-10 flex flex-col justify-between">
-                    <div>
-                        <span id="modal-brand" class="text-xs font-bold tracking-widest uppercase text-gray-400"></span>
-                        <h2 id="modal-name" class="font-serif text-3xl font-bold text-luxury-primary mt-1 mb-2"></h2>
-                        <p id="modal-type-color" class="text-sm text-luxury-text mb-6"></p>
-                        <div id="modal-specs" class="grid grid-cols-2 gap-4 mb-8"></div>
-                        <div class="w-12 h-px bg-luxury-accent mb-6"></div>
-                        <p id="modal-desc" class="text-sm text-luxury-text leading-relaxed"></p>
-                    </div>
-                    <div class="mt-8 flex flex-col gap-3">
-                        <div class="flex items-baseline justify-between mb-2">
-                            <span class="text-3xl font-serif font-bold text-luxury-primary" id="modal-price"></span>
-                            <span class="text-xs text-luxury-text">Free shipping · Lifetime adjustments</span>
-                        </div>
-                        <button id="modal-add-btn" class="w-full bg-luxury-primary text-white py-4 font-bold tracking-wider hover:bg-luxury-accent transition-colors duration-300 text-sm">ADD TO CART</button>
-                        <button onclick="closeProductModal()" class="w-full border border-luxury-secondary text-luxury-text py-3 text-sm hover:border-luxury-primary transition-colors duration-300">Continue Browsing</button>
-                        <a id="modal-source-link" href="#" target="_blank" class="text-center text-xs text-luxury-accent underline hidden">View on brand website ↗</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Main Content Area -->
-    <main id="app-content" class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"></main>
+    <main id="app-content" class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 transition-colors duration-300">
+        <!-- Content injected via JS -->
+    </main>
 
     <!-- Footer -->
-    <footer class="bg-luxury-primary text-luxury-secondary py-12 mt-auto">
+    <footer class="bg-luxury-surface text-luxury-text py-12 mt-auto border-t border-luxury-secondary transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
             <div>
-                <h3 class="font-serif text-lg text-luxury-accent mb-4">LUMINA.</h3>
+                <h3 class="font-serif text-lg text-luxury-accent mb-4 transition-colors">LUMINA.</h3>
                 <p class="opacity-80 leading-relaxed">Curating the world's finest eyewear for the discerning individual. Trust, passion, and visionary design.</p>
             </div>
             <div>
-                <h3 class="font-bold mb-4 tracking-wider">VISIT US</h3>
+                <h3 class="font-bold mb-4 tracking-wider text-luxury-primary transition-colors">VISIT US</h3>
                 <p class="opacity-80">123 Visionary Way</p>
                 <p class="opacity-80">Design District, NY 10012</p>
                 <p class="opacity-80 mt-2">+1 (555) 019-2024</p>
             </div>
             <div>
-                <h3 class="font-bold mb-4 tracking-wider">HOURS</h3>
-                <div class="flex justify-between max-w-xs opacity-80"><span>Mon - Fri</span><span>10:00 - 19:00</span></div>
-                <div class="flex justify-between max-w-xs opacity-80 mt-1"><span>Sat</span><span>11:00 - 18:00</span></div>
+                <h3 class="font-bold mb-4 tracking-wider text-luxury-primary transition-colors">HOURS</h3>
+                <div class="flex justify-between max-w-xs opacity-80">
+                    <span>Mon - Fri</span>
+                    <span>10:00 - 19:00</span>
+                </div>
+                <div class="flex justify-between max-w-xs opacity-80 mt-1">
+                    <span>Sat</span>
+                    <span>11:00 - 18:00</span>
+                </div>
             </div>
         </div>
-        <div class="text-center text-xs opacity-50 mt-12 pt-8 border-t border-gray-700">&copy; 2026 Lumina Optics. All Rights Reserved.</div>
+        <div class="text-center text-xs opacity-50 mt-12 pt-8 border-t border-luxury-secondary transition-colors">
+            &copy; 2026 Lumina Optics. All Rights Reserved.
+        </div>
     </footer>
 
+    <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-3"></div>
 
+    <!-- JavaScript Application Logic -->
     <script>
-    // ─── STATE ────────────────────────────────────────────
-    let products = []; // populated from server
-    let appState = {
-        currentPage: 'home',
-        filters: { brand: 'All', color: 'All', type: 'All' },
-        sortBy: 'featured',
-        groupByBrand: false,   // ← toggle brand grouping
-        cart: []
-    };
+        // --- DATA STORE ---
+        
+        // Products Database
+        const products = [
+            { id: 1, brand: 'ic! berlin', name: 'The Haptic', type: 'Optical', color: 'Black', price: 540, weight: 14, material: 'Stainless Steel', imageColor: '#2C2C2C' },
+            { id: 2, brand: 'ic! berlin', name: 'Urban Pulse', type: 'Sunglasses', color: 'Gold', price: 620, weight: 16, material: 'Stainless Steel', imageColor: '#D4AF37' },
+            { id: 3, brand: 'Tom Ford', name: 'FT5532', type: 'Optical', color: 'Tortoise', price: 495, weight: 28, material: 'Acetate', imageColor: '#5C4033' },
+            { id: 4, brand: 'Tom Ford', name: 'Snowdon', type: 'Sunglasses', color: 'Black', price: 450, weight: 32, material: 'Acetate', imageColor: '#1A1A1A' },
+            { id: 5, brand: 'Talla', name: 'Geometrico', type: 'Optical', color: 'Silver', price: 480, weight: 18, material: 'Titanium', imageColor: '#C0C0C0' },
+            { id: 6, brand: 'Talla', name: 'Sun Architect', type: 'Sunglasses', color: 'Blue', price: 510, weight: 20, material: 'Titanium', imageColor: '#4682B4' },
+            { id: 7, brand: 'Orgreen', name: 'Quantum High', type: 'Optical', color: 'Blue', price: 580, weight: 12, material: 'Titanium', imageColor: '#1E3A8A' },
+            { id: 8, brand: 'Orgreen', name: 'Nordic Light', type: 'Sunglasses', color: 'Silver', price: 610, weight: 15, material: 'Polyamide', imageColor: '#A0AEC0' },
+            { id: 9, brand: 'ic! berlin', name: 'Silk Collection', type: 'Optical', color: 'Gold', price: 590, weight: 11, material: 'Stainless Steel', imageColor: '#C5A000' },
+            { id: 10, brand: 'Tom Ford', name: 'Blue Block', type: 'Optical', color: 'Black', price: 420, weight: 30, material: 'Acetate', imageColor: '#000000' },
+            { id: 11, brand: 'Orgreen', name: 'Havana Nights', type: 'Sunglasses', color: 'Tortoise', price: 550, weight: 19, material: 'Titanium', imageColor: '#8B4513' },
+            { id: 12, brand: 'Talla', name: 'Modernist', type: 'Optical', color: 'Tortoise', price: 460, weight: 22, material: 'Acetate', imageColor: '#6F4E37' }
+        ];
 
-    const productDescriptions = {
-        1:  'Engineered from a single sheet of stainless steel with ic! berlin\'s signature screwless hinge, The Haptic is feather-light and virtually indestructible — the ideal everyday optical frame for the minimalist.',
-        2:  'Urban Pulse channels modernist architecture into a sunglass silhouette. The round lenses and gold-tone steel bridge create a statement that is confident without being loud.',
-        3:  'The FT5532 is Tom Ford at its most classic — rich tortoise acetate, generous proportions, and that unmistakable T-logo hardware on the temples. A frame that commands quiet authority.',
-        4:  'Snowdon is a study in deliberate simplicity. Its square acetate profile is cut with razor precision, referencing mid-century Italian design while feeling entirely contemporary.',
-        5:  'Titanium aerospace-grade temples meet hand-polished silver rims in the Geometrico — a frame for those who regard their eyewear as functional sculpture.',
-        6:  'Talla\'s take on the aviator is defined by tension: the lightweight titanium frame feels almost impossibly thin, while the deep blue-tinted lenses offer maximum UV protection.',
-        7:  'At just 12 grams, Quantum High is among the lightest frames we carry. Orgreen\'s Danish precision is apparent in every detail, from the angled temples to the hand-fitted titanium nose pads.',
-        8:  'Nordic Light\'s polyamide construction makes it one of our most resilient sunglasses — flexible enough to survive adventure, refined enough for the boardroom.',
-        9:  'The Silk Collection is ic! berlin\'s most refined expression in gold. The temples flex seamlessly without a hinge, and the finish has a warmth that deepens over time with wear.',
-        10: 'An entry into Tom Ford\'s optical catalogue, Blue Block combines the brand\'s heritage acetate craft with modern blue-light filtering lenses — form and function in perfect proportion.',
-        11: 'Havana Nights is named for a feeling — warm evenings, unhurried. The tortoise titanium frame pairs with gradient lenses to create a sunglass built for moments worth remembering.',
-        12: 'Modernist earns its name through restraint: clean angular acetate, no embellishment, and an unfussy tortoise finish that pairs with everything from a suit to a weekend jacket.'
-    };
-
-    // ─── LOAD PRODUCTS FROM SERVER ────────────────────────
-    async function loadProducts() {
-        try {
-            const res  = await fetch('http://localhost:3000/api/products');
-            const data = await res.json();
-            products = data;
-        } catch (err) {
-            console.warn('Could not reach server, using empty catalogue.');
-            products = [];
-        }
-    }
-
-    // ─── SVG FRAME ILLUSTRATION ───────────────────────────
-    function buildFrameSVG(product, size = 'large') {
-        const c          = product.imageColor || '#2C2C2C';
-        const isSun      = product.type === 'Sunglasses';
-        const sw         = size === 'large' ? 4 : 3;
-        const scale      = size === 'large' ? 1 : 0.65;
-        const lensOpacity = isSun ? '0.18' : '0.04';
-
-        const shapes = {
-            round: `<g transform="scale(${scale}) translate(${size==='large'?0:30}, ${size==='large'?0:20})">
-                  <circle cx="70" cy="60" r="38" fill="${c}" fill-opacity="${lensOpacity}" stroke="${c}" stroke-width="${sw}"/>
-                  <circle cx="170" cy="60" r="38" fill="${c}" fill-opacity="${lensOpacity}" stroke="${c}" stroke-width="${sw}"/>
-                  <path d="M108 60 Q120 52 132 60" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round"/>
-                  <line x1="32" y1="45" x2="-20" y2="52" stroke="${c}" stroke-width="${sw-1}" stroke-linecap="round"/>
-                  <line x1="208" y1="45" x2="260" y2="52" stroke="${c}" stroke-width="${sw-1}" stroke-linecap="round"/>
-                </g>`,
-            rect: `<g transform="scale(${scale}) translate(${size==='large'?0:30}, ${size==='large'?0:20})">
-                  <rect x="32" y="32" width="76" height="52" rx="10" ry="10" fill="${c}" fill-opacity="${lensOpacity}" stroke="${c}" stroke-width="${sw}"/>
-                  <rect x="132" y="32" width="76" height="52" rx="10" ry="10" fill="${c}" fill-opacity="${lensOpacity}" stroke="${c}" stroke-width="${sw}"/>
-                  <path d="M108 56 Q120 48 132 56" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round"/>
-                  <line x1="32" y1="44" x2="-14" y2="50" stroke="${c}" stroke-width="${sw-1}" stroke-linecap="round"/>
-                  <line x1="208" y1="44" x2="254" y2="50" stroke="${c}" stroke-width="${sw-1}" stroke-linecap="round"/>
-                </g>`,
-            square: `<g transform="scale(${scale}) translate(${size==='large'?0:30}, ${size==='large'?0:20})">
-                  <rect x="28" y="28" width="82" height="64" rx="4" ry="4" fill="${c}" fill-opacity="${lensOpacity}" stroke="${c}" stroke-width="${sw}"/>
-                  <rect x="130" y="28" width="82" height="64" rx="4" ry="4" fill="${c}" fill-opacity="${lensOpacity}" stroke="${c}" stroke-width="${sw}"/>
-                  <path d="M110 58 Q120 50 130 58" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round"/>
-                  <line x1="28" y1="42" x2="-16" y2="50" stroke="${c}" stroke-width="${sw-1}" stroke-linecap="round"/>
-                  <line x1="212" y1="42" x2="256" y2="50" stroke="${c}" stroke-width="${sw-1}" stroke-linecap="round"/>
-                </g>`,
-            aviator: `<g transform="scale(${scale}) translate(${size==='large'?0:30}, ${size==='large'?0:20})">
-                  <path d="M32 36 Q32 10 70 10 Q108 10 108 44 Q108 76 70 82 Q32 76 32 44 Z" fill="${c}" fill-opacity="${lensOpacity}" stroke="${c}" stroke-width="${sw}"/>
-                  <path d="M132 36 Q132 10 170 10 Q208 10 208 44 Q208 76 170 82 Q132 76 132 44 Z" fill="${c}" fill-opacity="${lensOpacity}" stroke="${c}" stroke-width="${sw}"/>
-                  <path d="M108 38 Q120 28 132 38" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round"/>
-                  <path d="M32 28 Q120 14 208 28" fill="none" stroke="${c}" stroke-width="${sw-1}" stroke-linecap="round"/>
-                  <line x1="32" y1="36" x2="-12" y2="44" stroke="${c}" stroke-width="${sw-1}" stroke-linecap="round"/>
-                  <line x1="208" y1="36" x2="252" y2="44" stroke="${c}" stroke-width="${sw-1}" stroke-linecap="round"/>
-                </g>`
+        // State Management
+        let appState = {
+            currentPage: 'home',
+            filters: {
+                brand: 'All',
+                color: 'All',
+                type: 'All'
+            },
+            sortBy: 'featured',
+            cart: []
         };
 
-        const vb = size === 'large' ? '0 0 240 120' : '0 0 170 85';
-        return `<svg class="frame-svg" viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" style="max-width:${size==='large'?'260px':'160px'}; max-height:${size==='large'?'130px':'80px'}">
-            ${shapes[product.shape] || shapes.rect}
-        </svg>`;
-    }
+        // Gemini API Setup
+        const apiKey = "";
 
-    // Build the product visual: real image if available, SVG otherwise
-    function buildProductVisual(product, size = 'large') {
-        if (product.imageUrl) {
-            const h = size === 'large' ? 'h-64' : 'h-full';
-            return `<img src="${product.imageUrl}" alt="${product.name}"
-                        class="product-img"
-                        onerror="this.parentElement.innerHTML=\`${buildFrameSVG(product, size).replace(/`/g,'\\`')}\`">`;
-        }
-        return buildFrameSVG(product, size);
-    }
-
-    // ─── NAVIGATION ───────────────────────────────────────
-    function navigateTo(pageId) {
-        appState.currentPage = pageId;
-        const contentDiv = document.getElementById('app-content');
-        contentDiv.style.opacity = '0';
-        setTimeout(() => {
-            renderPage(pageId);
-            window.scrollTo(0, 0);
-            contentDiv.style.opacity = '1';
-            contentDiv.style.transition = 'opacity 0.3s ease-in';
-        }, 200);
-    }
-
-    function toggleMobileMenu() {
-        document.getElementById('mobile-menu').classList.toggle('hidden');
-    }
-
-    function renderPage(pageId) {
-        const contentDiv = document.getElementById('app-content');
-        contentDiv.innerHTML = '';
-        switch(pageId) {
-            case 'home':    renderHome(contentDiv); break;
-            case 'shop':    renderShop(contentDiv); break;
-            case 'stylist': renderStylist(contentDiv); break;
-            case 'about':   renderAbout(contentDiv); break;
-            case 'cart':    renderCart(contentDiv); break;
-            default:        renderHome(contentDiv);
-        }
-    }
-
-    // ─── PRODUCT DETAIL MODAL ─────────────────────────────
-    function openProductModal(productId) {
-        const product = products.find(p => p.id === productId);
-        if (!product) return;
-
-        // Visual — real image or SVG
-        const visualDiv = document.getElementById('modal-visual');
-        if (product.imageUrl) {
-            visualDiv.innerHTML = `<img src="${product.imageUrl}" alt="${product.name}"
-                class="w-full h-full object-contain p-6"
-                onerror="this.parentElement.innerHTML='${buildFrameSVG(product, 'large').replace(/'/g, "\\'")}'">`;
-        } else {
-            visualDiv.innerHTML = buildFrameSVG(product, 'large');
+        // --- THEME LOGIC ---
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+            updateThemeIcons();
         }
 
-        document.getElementById('modal-brand').textContent        = product.brand;
-        document.getElementById('modal-name').textContent         = product.name;
-        document.getElementById('modal-type-color').textContent   = `${product.color} · ${product.type}`;
-        document.getElementById('modal-price').textContent        = product.price ? `$${product.price}` : 'Price on request';
-        document.getElementById('modal-desc').textContent         = productDescriptions[product.id] || '';
-
-        document.getElementById('modal-specs').innerHTML = `
-            <div class="bg-luxury-secondary/40 rounded p-3">
-                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Material</p>
-                <p class="text-sm font-semibold text-luxury-primary">${product.material || '—'}</p>
-            </div>
-            <div class="bg-luxury-secondary/40 rounded p-3">
-                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Weight</p>
-                <p class="text-sm font-semibold text-luxury-primary">${product.weight ? product.weight + 'g' : '—'}</p>
-            </div>
-            <div class="bg-luxury-secondary/40 rounded p-3">
-                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Type</p>
-                <p class="text-sm font-semibold text-luxury-primary">${product.type}</p>
-            </div>
-            <div class="bg-luxury-secondary/40 rounded p-3">
-                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Colorway</p>
-                <p class="text-sm font-semibold text-luxury-primary">${product.color}</p>
-            </div>
-        `;
-
-        // Source link (for scraped products)
-        const linkEl = document.getElementById('modal-source-link');
-        if (product.sourceUrl && !product.manual) {
-            linkEl.href = product.sourceUrl;
-            linkEl.classList.remove('hidden');
-        } else {
-            linkEl.classList.add('hidden');
+        function updateThemeIcons() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const sunSvg = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`;
+            const moonSvg = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>`;
+            
+            document.getElementById('theme-icon-desktop').innerHTML = isDark ? sunSvg : moonSvg;
+            document.getElementById('theme-icon-mobile').innerHTML = isDark ? sunSvg : moonSvg;
         }
 
-        document.getElementById('modal-add-btn').onclick = () => { addToCart(product.id); closeProductModal(); };
+        // --- NAVIGATION LOGIC ---
 
-        const modal = document.getElementById('product-modal');
-        modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeProductModal() {
-        document.getElementById('product-modal').classList.add('hidden');
-        document.body.style.overflow = '';
-    }
-    function closeModal(e) {
-        if (e.target === document.getElementById('product-modal') ||
-            e.target.classList.contains('absolute')) {
-            closeProductModal();
+        function navigateTo(pageId) {
+            appState.currentPage = pageId;
+            const contentDiv = document.getElementById('app-content');
+            
+            // Fade out effect
+            contentDiv.style.opacity = '0';
+            
+            setTimeout(() => {
+                renderPage(pageId);
+                window.scrollTo(0, 0);
+                contentDiv.style.opacity = '1';
+                contentDiv.style.transition = 'opacity 0.3s ease-in';
+            }, 200);
         }
-    }
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeProductModal(); });
 
-    // ─── PAGE RENDERERS ───────────────────────────────────
-    function renderHome(container) {
-        const highlights = products.slice(0, 3);
-        container.innerHTML = `
-            <section class="relative bg-luxury-secondary rounded-xl overflow-hidden shadow-lg mb-16 fade-in">
-                <div class="absolute inset-0 bg-gradient-to-r from-luxury-primary/10 to-transparent"></div>
-                <div class="relative z-10 px-8 py-24 md:py-32 flex flex-col items-start justify-center text-center md:text-left">
-                    <h2 class="font-serif text-xl text-luxury-accent tracking-widest mb-4">EST. 2005</h2>
-                    <h1 class="font-serif text-4xl md:text-6xl text-luxury-primary font-bold mb-6 leading-tight">Clarify Your<br/>Perspective.</h1>
-                    <p class="text-luxury-text text-lg mb-8 max-w-lg">Discover an exclusive curation of the world's finest optical engineering. Featuring ic! berlin, Tom Ford, and more.</p>
-                    <button onclick="navigateTo('shop')" class="bg-luxury-primary text-white px-8 py-4 rounded-sm hover:bg-luxury-accent transition-colors duration-300 tracking-wider font-bold shadow-md">EXPLORE THE COLLECTION</button>
-                </div>
-                <div class="absolute -right-20 -bottom-40 w-96 h-96 rounded-full border-[30px] border-white opacity-20 hidden md:block"></div>
-            </section>
-
-            <section class="mb-20 text-center fade-in">
-                <p class="text-sm font-bold tracking-widest text-luxury-text/50 mb-8 uppercase">Our Partners</p>
-                <div class="flex flex-wrap justify-center gap-12 md:gap-24 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
-                    <div class="text-xl font-bold font-serif">ic! berlin</div>
-                    <div class="text-xl font-bold font-serif">TOM FORD</div>
-                    <div class="text-xl font-bold font-serif">TALLA</div>
-                    <div class="text-xl font-bold font-serif">ØRGREEN</div>
-                </div>
-            </section>
-
-            <section class="mb-16 fade-in">
-                <div class="flex justify-between items-end mb-8">
-                    <div>
-                        <h2 class="text-3xl font-serif text-luxury-primary mb-2">Curated Highlights</h2>
-                        <p class="text-luxury-text text-sm max-w-md">Handpicked frames that define the season's aesthetic.</p>
-                    </div>
-                    <button onclick="navigateTo('shop')" class="text-luxury-accent hover:text-luxury-primary font-bold text-sm tracking-wide border-b border-luxury-accent pb-1">VIEW ALL</button>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    ${highlights.map(p => createProductCard(p)).join('')}
-                </div>
-            </section>
-
-            <section class="bg-luxury-primary text-luxury-base p-12 rounded-xl text-center md:flex md:justify-between md:items-center fade-in">
-                <div class="md:text-left mb-6 md:mb-0">
-                    <h3 class="text-2xl font-serif mb-2">Not sure what fits?</h3>
-                    <p class="opacity-80">Consult our AI Stylist to find the perfect frame for your face shape and lifestyle.</p>
-                </div>
-                <button onclick="navigateTo('stylist')" class="border border-luxury-accent text-luxury-accent px-8 py-3 rounded-sm hover:bg-luxury-accent hover:text-white transition-all duration-300">CONSULT AI STYLIST ✨</button>
-            </section>
-        `;
-    }
-
-    // ─── SHOP RENDERER ────────────────────────────────────
-    function renderShop(container) {
-        let filtered = products.filter(p =>
-            (appState.filters.brand === 'All' || p.brand === appState.filters.brand) &&
-            (appState.filters.color === 'All' || p.color === appState.filters.color) &&
-            (appState.filters.type  === 'All' || p.type  === appState.filters.type)
-        );
-
-        if (appState.sortBy === 'priceAsc')  filtered.sort((a,b) => a.price - b.price);
-        if (appState.sortBy === 'priceDesc') filtered.sort((a,b) => b.price - a.price);
-        if (appState.sortBy === 'az')        filtered.sort((a,b) => a.name.localeCompare(b.name));
-
-        const brands = ['All', ...new Set(products.map(p => p.brand))];
-        const colors = ['All', ...new Set(products.map(p => p.color))];
-        const types  = ['All', ...new Set(products.map(p => p.type))];
-
-        const productGridHTML = appState.groupByBrand
-            ? renderByBrand(filtered)
-            : renderFlatGrid(filtered);
-
-        container.innerHTML = `
-            <div class="mb-8 fade-in">
-                <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-2">
-                    <div>
-                        <h1 class="text-3xl md:text-4xl font-serif text-luxury-primary mb-2">The Collection</h1>
-                        <p class="text-luxury-text text-sm">Browse our full catalogue. Use filters to refine.</p>
-                    </div>
-                    <!-- Sync Collection button -->
-                    <button id="syncBtn" onclick="triggerScrape()"
-                        class="flex items-center gap-2 border border-luxury-accent text-luxury-accent px-5 py-2.5 text-sm font-bold tracking-wide hover:bg-luxury-accent hover:text-white transition-all duration-300 rounded-sm self-start md:self-auto">
-                        <svg id="syncIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                        </svg>
-                        SYNC COLLECTION
-                    </button>
-                </div>
-            </div>
-
-            <div class="flex flex-col lg:flex-row gap-8 fade-in">
-                <!-- Mobile filter toggle -->
-                <div class="lg:hidden w-full">
-                    <button onclick="toggleMobileFilters()" class="w-full border border-luxury-primary text-luxury-primary py-3 text-sm uppercase font-bold flex justify-center items-center gap-2 hover:bg-luxury-primary hover:text-white transition-colors duration-300 rounded-sm">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-                        Filters &amp; Sort
-                    </button>
-                </div>
-
-                <!-- Sidebar -->
-                <aside id="shopFilters" class="hidden lg:block w-full lg:w-1/4 bg-white p-6 rounded-lg shadow-sm h-fit sticky top-24 border border-luxury-secondary lg:border-none">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-bold tracking-widest uppercase text-sm">Filters</h3>
-                        <button onclick="resetFilters()" class="text-xs text-luxury-accent hover:underline">Reset</button>
-                    </div>
-
-                    <!-- Brand filter -->
-                    <div class="mb-6">
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Brand</label>
-                        <select onchange="updateFilter('brand', this.value)"
-                            class="w-full bg-luxury-base border border-gray-200 rounded p-2 text-sm focus:border-luxury-accent outline-none">
-                            ${brands.map(b => `<option value="${b}" ${appState.filters.brand===b?'selected':''}>${b}</option>`).join('')}
-                        </select>
-                    </div>
-
-                    <!-- Type filter -->
-                    <div class="mb-6">
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Type</label>
-                        <div class="space-y-2">
-                            ${types.map(t => `<label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="radio" name="type" value="${t}" onchange="updateFilter('type', this.value)" ${appState.filters.type===t?'checked':''} class="text-luxury-accent">
-                                <span class="text-sm">${t}</span>
-                            </label>`).join('')}
-                        </div>
-                    </div>
-
-                    <!-- Color filter -->
-                    <div class="mb-6">
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Color</label>
-                        <div class="flex flex-wrap gap-2">
-                            ${colors.filter(c=>c!=='All').map(c => `
-                                <button onclick="updateFilter('color','${appState.filters.color===c?'All':c}')"
-                                    class="w-6 h-6 rounded-full border ${appState.filters.color===c?'ring-2 ring-luxury-accent ring-offset-2':'border-gray-200'}"
-                                    style="background-color:${getColorHex(c)}" title="${c}">
-                                </button>`).join('')}
-                        </div>
-                    </div>
-
-                    <!-- Sort -->
-                    <div class="pt-6 border-t border-gray-100 mb-6">
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Sort By</label>
-                        <select onchange="updateSort(this.value)"
-                            class="w-full bg-luxury-base border border-gray-200 rounded p-2 text-sm">
-                            <option value="featured" ${appState.sortBy==='featured'?'selected':''}>Featured</option>
-                            <option value="priceAsc" ${appState.sortBy==='priceAsc'?'selected':''}>Price: Low to High</option>
-                            <option value="priceDesc" ${appState.sortBy==='priceDesc'?'selected':''}>Price: High to Low</option>
-                            <option value="az" ${appState.sortBy==='az'?'selected':''}>Name: A – Z</option>
-                        </select>
-                    </div>
-
-                    <!-- Group by brand toggle -->
-                    <div class="pt-4 border-t border-gray-100">
-                        <label class="flex items-center justify-between cursor-pointer">
-                            <span class="text-xs font-bold text-gray-500 uppercase">Group by Brand</span>
-                            <div onclick="toggleGroupByBrand()" class="relative w-10 h-5 rounded-full transition-colors duration-300 ${appState.groupByBrand ? 'bg-luxury-accent' : 'bg-gray-300'}">
-                                <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-300 ${appState.groupByBrand ? 'translate-x-5' : ''}"></div>
-                            </div>
-                        </label>
-                    </div>
-                </aside>
-
-                <!-- Product area -->
-                <div class="w-full lg:w-3/4">
-                    <div class="mb-4 text-sm text-gray-500">Showing <span class="font-bold text-luxury-primary">${filtered.length}</span> results</div>
-                    ${filtered.length > 0 ? productGridHTML : `
-                        <div class="flex flex-col items-center justify-center h-64 bg-white rounded-lg border border-dashed border-gray-300">
-                            <span class="text-4xl mb-4 text-gray-300">☹</span>
-                            <h3 class="text-lg font-medium text-gray-600">No frames match your criteria.</h3>
-                            <button onclick="resetFilters()" class="mt-4 text-luxury-accent underline">Clear all filters</button>
-                        </div>`}
-                </div>
-            </div>
-        `;
-    }
-
-    // Flat grid (original layout)
-    function renderFlatGrid(items) {
-        return `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            ${items.map(p => createProductCard(p)).join('')}
-        </div>`;
-    }
-
-    // Grouped by brand
-    function renderByBrand(items) {
-        const brandMap = {};
-        items.forEach(p => {
-            if (!brandMap[p.brand]) brandMap[p.brand] = [];
-            brandMap[p.brand].push(p);
-        });
-
-        return Object.entries(brandMap).map(([brand, brandProducts]) => `
-            <div class="mb-14">
-                <div class="brand-section-header mb-6">
-                    <h2 class="font-serif text-2xl text-luxury-primary">${brand}</h2>
-                    <p class="text-xs text-gray-400 mt-1">${brandProducts.length} frame${brandProducts.length!==1?'s':''}</p>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    ${brandProducts.map(p => createProductCard(p)).join('')}
-                </div>
-            </div>
-        `).join('');
-    }
-
-    // ─── SYNC / SCRAPE TRIGGER ────────────────────────────
-    async function triggerScrape() {
-        const btn  = document.getElementById('syncBtn');
-        const icon = document.getElementById('syncIcon');
-        if (!btn) return;
-
-        btn.disabled = true;
-        btn.innerHTML = `<svg class="w-4 h-4 spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-        </svg> SYNCING...`;
-
-        try {
-            const res  = await fetch('http://localhost:3000/api/scrape', { method: 'POST' });
-            const data = await res.json();
-            if (data.error) throw new Error(data.error);
-            products = data.products;
-            showInfoToast(`✅ Synced ${data.count} products from all brands.`);
-            renderShop(document.getElementById('app-content'));
-        } catch (err) {
-            showInfoToast('⚠️ Sync failed: ' + err.message);
-            btn.disabled = false;
-            btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-            </svg> SYNC COLLECTION`;
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
         }
-    }
 
-    // ─── ABOUT, CART, STYLIST (unchanged logic) ───────────
-    function renderAbout(container) {
-        container.innerHTML = `
-            <div class="max-w-4xl mx-auto fade-in">
-                <div class="text-center mb-16">
-                    <h1 class="text-4xl md:text-5xl font-serif text-luxury-primary mb-6">Built on Trust &amp; Passion</h1>
-                    <div class="w-24 h-1 bg-luxury-accent mx-auto"></div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-20">
-                    <div class="bg-luxury-secondary h-80 rounded-lg flex items-center justify-center">
-                        <div class="text-center p-8">
-                            <span class="text-6xl text-luxury-primary opacity-20 block mb-4">❝❞</span>
-                            <p class="font-serif italic text-luxury-text">"Eyewear is not just an accessory. It is the framework through which you see the world."</p>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="text-2xl font-serif mb-4 text-luxury-primary">Our Difference</h3>
-                        <p class="text-luxury-text leading-relaxed mb-6">Unlike mass-market retailers, Lumina Optics is a sanctuary for independent eyewear design. We have spent over two decades cultivating relationships with small-batch artisans in Berlin, Copenhagen, and Italy.</p>
-                        <p class="text-luxury-text leading-relaxed">We believe in "Slow Fashion" for your face. Every frame in our collection is chosen for its engineering integrity, material quality, and timeless aesthetic.</p>
-                    </div>
-                </div>
-                <div class="bg-white p-8 rounded-lg shadow-sm border-t-4 border-luxury-accent">
-                    <h3 class="text-xl font-bold mb-6 text-center">The Lumina Promise</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                        <div><div class="text-3xl mb-2">✦</div><h4 class="font-bold text-sm uppercase mb-2">Authenticity</h4><p class="text-sm text-gray-600">Authorized retailer for every brand we carry.</p></div>
-                        <div><div class="text-3xl mb-2">⚒</div><h4 class="font-bold text-sm uppercase mb-2">Craftsmanship</h4><p class="text-sm text-gray-600">Premium acetate, titanium, and steel only.</p></div>
-                        <div><div class="text-3xl mb-2">♥</div><h4 class="font-bold text-sm uppercase mb-2">Care</h4><p class="text-sm text-gray-600">Lifetime adjustments and comprehensive fitting support.</p></div>
-                    </div>
-                </div>
-            </div>`;
-    }
+        function renderPage(pageId) {
+            const contentDiv = document.getElementById('app-content');
+            contentDiv.innerHTML = ''; // Clear current content
 
-    function renderCart(container) {
-        if (appState.cart.length === 0) {
+            switch(pageId) {
+                case 'home':
+                    renderHome(contentDiv);
+                    break;
+                case 'shop':
+                    renderShop(contentDiv);
+                    break;
+                case 'stylist':
+                    renderStylist(contentDiv);
+                    break;
+                case 'about':
+                    renderAbout(contentDiv);
+                    break;
+                case 'cart':
+                    renderCart(contentDiv);
+                    break;
+                default:
+                    renderHome(contentDiv);
+            }
+        }
+
+        // --- PAGE RENDERERS ---
+
+        function renderHome(container) {
             container.innerHTML = `
-                <div class="text-center py-20 fade-in">
-                    <h1 class="text-4xl font-serif text-luxury-primary mb-4">Your Cart is Empty</h1>
-                    <p class="text-luxury-text mb-8">Discover our collection of premium eyewear to find your perfect frame.</p>
-                    <button onclick="navigateTo('shop')" class="bg-luxury-primary text-white px-8 py-4 font-bold tracking-wider hover:bg-luxury-accent transition-colors duration-300">EXPLORE COLLECTION</button>
-                </div>`;
-            return;
-        }
-        const subtotal = appState.cart.reduce((s, i) => s + (i.price || 0), 0);
-        container.innerHTML = `
-            <div class="max-w-5xl mx-auto fade-in">
-                <h1 class="text-3xl md:text-4xl font-serif text-luxury-primary mb-10 text-center">Your Selection</h1>
-                <div class="flex flex-col lg:flex-row gap-12">
-                    <div class="w-full lg:w-2/3">
-                        ${appState.cart.map((item, idx) => `
-                            <div class="flex items-center gap-6 border-b border-luxury-secondary py-6 fade-in">
-                                <div class="w-24 h-24 bg-gray-50 flex items-center justify-center rounded border border-gray-100 flex-shrink-0 p-2 overflow-hidden">
-                                    ${item.imageUrl
-                                        ? `<img src="${item.imageUrl}" alt="${item.name}" class="object-contain w-full h-full">`
-                                        : buildFrameSVG(item, 'small')}
-                                </div>
-                                <div class="flex-grow">
-                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">${item.brand}</span>
-                                    <h3 class="text-lg font-serif font-bold text-luxury-primary">${item.name}</h3>
-                                    <p class="text-sm text-gray-500">${item.color} | ${item.type}</p>
-                                </div>
-                                <div class="text-right flex-shrink-0">
-                                    <p class="font-medium text-lg">${item.price ? '$' + item.price : '—'}</p>
-                                    <button onclick="removeFromCart(${idx})" class="text-xs text-red-500 uppercase tracking-widest mt-2 hover:underline">Remove</button>
-                                </div>
-                            </div>`).join('')}
+                <!-- Hero Section -->
+                <section class="relative bg-luxury-surface rounded-xl overflow-hidden shadow-lg mb-16 fade-in border border-luxury-secondary transition-colors duration-300">
+                    <div class="absolute inset-0 bg-gradient-to-r from-luxury-primary/10 to-transparent"></div>
+                    <div class="relative z-10 px-8 py-24 md:py-32 flex flex-col items-start justify-center text-center md:text-left">
+                        <h2 class="font-serif text-xl text-luxury-accent tracking-widest mb-4">EST. 2005</h2>
+                        <h1 class="font-serif text-4xl md:text-6xl text-luxury-primary font-bold mb-6 leading-tight transition-colors">
+                            Clarify Your<br/>Perspective.
+                        </h1>
+                        <p class="text-luxury-text text-lg mb-8 max-w-lg transition-colors">
+                            Discover an exclusive curation of the world's finest optical engineering. 
+                            Featuring ic! berlin, Tom Ford, and more.
+                        </p>
+                        <button onclick="navigateTo('shop')" class="bg-luxury-primary text-luxury-base px-8 py-4 rounded-sm hover:bg-luxury-accent hover:text-white transition-colors duration-300 tracking-wider font-bold shadow-md">
+                            EXPLORE THE COLLECTION
+                        </button>
                     </div>
-                    <div class="w-full lg:w-1/3">
-                        <div class="bg-white p-8 rounded-lg border border-luxury-secondary shadow-sm sticky top-24">
-                            <h3 class="font-bold uppercase tracking-widest border-b border-luxury-secondary pb-4 mb-6">Order Summary</h3>
-                            <div class="flex justify-between mb-4 text-luxury-text"><span>Subtotal (${appState.cart.length} item${appState.cart.length!==1?'s':''})</span><span>$${subtotal.toFixed(2)}</span></div>
-                            <div class="flex justify-between mb-6 text-luxury-text"><span>Standard Shipping</span><span class="text-luxury-accent font-medium">Complimentary</span></div>
-                            <div class="flex justify-between border-t border-luxury-secondary pt-6 mb-8 font-serif font-bold text-2xl text-luxury-primary"><span>Total</span><span>$${subtotal.toFixed(2)}</span></div>
-                            <button class="w-full bg-luxury-primary text-white py-4 font-bold tracking-wider hover:bg-luxury-accent transition-colors duration-300">SECURE CHECKOUT</button>
-                            <div class="mt-6 text-center text-xs text-gray-400 flex justify-center items-center gap-2"><span class="text-lg">🔒</span><span>Encrypted Transaction</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>`;
-    }
+                    <!-- Decorative Circle representing a lens -->
+                    <div class="absolute -right-20 -bottom-40 w-96 h-96 rounded-full border-[30px] border-luxury-secondary opacity-30 hidden md:block transition-colors"></div>
+                </section>
 
-    // ─── STYLIST ──────────────────────────────────────────
-    const stylistChips = [
-        { label: 'Round face',          text: 'I have a round face and want frames that add structure and definition.' },
-        { label: 'Square face',         text: 'I have a square jawline and am looking for something that softens my features.' },
-        { label: 'Minimal & understated', text: 'I prefer minimal, understated frames — nothing too flashy, just refined and quiet.' },
-        { label: 'Bold statement',      text: 'I want bold, statement eyewear that turns heads. Confident and distinctive.' },
-        { label: 'Professional setting',text: 'I work in a corporate environment and need something polished and professional.' },
-        { label: 'Creative industry',   text: 'I work in a creative field and want frames that reflect personality and originality.' },
-        { label: 'Ultra lightweight',   text: 'Comfort is my priority — I want the lightest frame possible for all-day wear.' },
-        { label: 'Classic & timeless',  text: 'I prefer a classic, timeless aesthetic that will never go out of style.' },
-    ];
-    let activeChips = new Set();
-
-    function renderStylist(container) {
-        container.innerHTML = `
-            <div class="max-w-4xl mx-auto fade-in">
-                <div class="text-center mb-10">
-                    <h1 class="text-4xl font-serif text-luxury-primary mb-4 flex justify-center items-center gap-3">
-                        <span class="text-luxury-accent">✨</span> Personal AI Stylist
-                    </h1>
-                    <p class="text-luxury-text max-w-2xl mx-auto">Describe your facial features, personal style, and what you're looking for. Our AI will curate the perfect frames from our collection just for you.</p>
-                </div>
-                <div class="bg-white p-8 rounded-lg shadow-sm border border-luxury-secondary mb-10">
-                    <div class="mb-5">
-                        <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Quick starters — tap to add</p>
-                        <div class="flex flex-wrap gap-2" id="chip-container">
-                            ${stylistChips.map((chip, i) => `<button class="prompt-chip" data-index="${i}" onclick="toggleChip(${i})">${chip.label}</button>`).join('')}
-                        </div>
+                <!-- Featured Brands Strip -->
+                <section class="mb-20 text-center fade-in">
+                    <p class="text-sm font-bold tracking-widest text-luxury-text opacity-50 mb-8 uppercase transition-colors">Our Partners</p>
+                    <div class="flex flex-wrap justify-center gap-12 md:gap-24 opacity-60 grayscale hover:grayscale-0 transition-all duration-500 text-luxury-primary">
+                        <div class="text-xl font-bold font-serif">ic! berlin</div>
+                        <div class="text-xl font-bold font-serif">TOM FORD</div>
+                        <div class="text-xl font-bold font-serif">TALLA</div>
+                        <div class="text-xl font-bold font-serif">ØRGREEN</div>
                     </div>
-                    <div class="w-full h-px bg-luxury-secondary mb-5"></div>
-                    <textarea id="stylePrompt" rows="4"
-                        class="w-full bg-luxury-base border border-gray-200 rounded p-4 text-sm focus:border-luxury-accent focus:ring-1 focus:ring-luxury-accent outline-none transition-all resize-none mb-4"
-                        placeholder="E.g., I have a square face and I work in a creative agency. I want something bold but professional, preferably in a dark color..."></textarea>
-                    <button id="stylistBtn" onclick="handleStyleSubmit()"
-                        class="w-full bg-luxury-primary text-white py-4 font-bold tracking-wider hover:bg-luxury-accent transition-colors duration-300 flex justify-center items-center gap-2">
-                        <span>DISCOVER MY FRAMES</span> <span class="text-xl">✨</span>
+                </section>
+
+                <!-- Featured Products Preview -->
+                <section class="mb-16 fade-in">
+                    <div class="flex justify-between items-end mb-8">
+                        <div>
+                            <h2 class="text-3xl font-serif text-luxury-primary mb-2 transition-colors">Curated Highlights</h2>
+                            <p class="text-luxury-text opacity-80 text-sm max-w-md transition-colors">Handpicked frames that define the season's aesthetic.</p>
+                        </div>
+                        <button onclick="navigateTo('shop')" class="text-luxury-accent hover:text-luxury-primary font-bold text-sm tracking-wide border-b border-luxury-accent pb-1 transition-colors">VIEW ALL</button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        ${products.slice(0, 3).map(product => createProductCard(product)).join('')}
+                    </div>
+                </section>
+                
+                <!-- CTA Banner -->
+                <section class="bg-luxury-surface border border-luxury-secondary p-12 rounded-xl text-center md:flex md:justify-between md:items-center fade-in transition-colors duration-300 shadow-sm">
+                    <div class="md:text-left mb-6 md:mb-0">
+                        <h3 class="text-2xl font-serif mb-2 text-luxury-primary transition-colors">Not sure what fits?</h3>
+                        <p class="text-luxury-text opacity-80 transition-colors">Consult our AI Stylist to find the perfect frame for your face shape and lifestyle.</p>
+                    </div>
+                    <button onclick="navigateTo('stylist')" class="border border-luxury-accent text-luxury-accent px-8 py-3 rounded-sm hover:bg-luxury-accent hover:text-white transition-all duration-300">
+                        CONSULT AI STYLIST ✨
                     </button>
-                </div>
-                <div id="stylistResults" class="hidden"></div>
-            </div>`;
-        activeChips.forEach(i => {
-            const btn = document.querySelector(`.prompt-chip[data-index="${i}"]`);
-            if (btn) btn.classList.add('active');
-        });
-    }
-
-    function toggleChip(index) {
-        const btn      = document.querySelector(`.prompt-chip[data-index="${index}"]`);
-        const textarea = document.getElementById('stylePrompt');
-        if (activeChips.has(index)) {
-            activeChips.delete(index);
-            btn.classList.remove('active');
-            rebuildTextarea(textarea);
-        } else {
-            activeChips.add(index);
-            btn.classList.add('active');
-            const current = textarea.value.trim();
-            textarea.value = current ? current + ' ' + stylistChips[index].text : stylistChips[index].text;
+                </section>
+            `;
         }
-    }
-    function rebuildTextarea(textarea) {
-        textarea.value = [...activeChips].map(i => stylistChips[i].text).join(' ');
-    }
 
-    async function handleStyleSubmit() {
-        const promptInput = document.getElementById('stylePrompt').value;
-        const resultsDiv  = document.getElementById('stylistResults');
-        const btn         = document.getElementById('stylistBtn');
-        if (!promptInput.trim()) return;
-
-        btn.disabled = true;
-        btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>CURATING YOUR LOOK...</span>`;
-        resultsDiv.classList.remove('hidden');
-        resultsDiv.innerHTML = `<div class="flex flex-col items-center justify-center py-12 text-luxury-text opacity-70 fade-in"><div class="text-4xl mb-4 animate-pulse">✨</div><p class="tracking-widest text-sm uppercase">Analyzing profile...</p></div>`;
-
-        try {
-            const inventoryJSON = JSON.stringify(products.map(p => ({ id: p.id, brand: p.brand, name: p.name, type: p.type, color: p.color, material: p.material })));
-            const combinedPrompt = `You are an elite, high-end eyewear stylist at Lumina Optics.
-Based on the user's description of their style, face shape, and needs, select 2 to 3 frames from our inventory that fit them best.
-Inventory: ${inventoryJSON}
-User Request: ${promptInput}
-
-IMPORTANT: You must respond ONLY with a valid JSON object. Do not include markdown formatting.
-The JSON must match this structure exactly:
-{
-    "introMessage": "Your luxurious, confident intro message explaining the vibe.",
-    "recommendations": [
-        { "productId": 1, "reason": "Specific reason this frame works for them." }
-    ]
-}`;
-
-            const response = await fetch('http://localhost:3000/api/stylist', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userPrompt: combinedPrompt })
+        function renderShop(container) {
+            // Filter Logic
+            let filteredProducts = products.filter(p => {
+                return (appState.filters.brand === 'All' || p.brand === appState.filters.brand) &&
+                       (appState.filters.color === 'All' || p.color === appState.filters.color) &&
+                       (appState.filters.type === 'All' || p.type === appState.filters.type);
             });
-            const data = await response.json();
-            if (data.error) throw new Error(data.error);
 
-            let cleanText = data.reply.replace(/```json/g, '').replace(/```/g, '').trim();
-            const aiResult = JSON.parse(cleanText);
+            // Sort Logic
+            if (appState.sortBy === 'priceAsc') {
+                filteredProducts.sort((a, b) => a.price - b.price);
+            } else if (appState.sortBy === 'priceDesc') {
+                filteredProducts.sort((a, b) => b.price - a.price);
+            } else if (appState.sortBy === 'az') {
+                filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+            }
 
-            let recommendationsHTML = aiResult.recommendations.map(rec => {
-                const product = products.find(p => p.id === rec.productId);
-                if (!product) return '';
-                return `
-                    <div class="flex flex-col md:flex-row gap-8 bg-white p-6 rounded-lg border border-luxury-secondary shadow-sm mb-6 fade-in">
-                        <div class="w-full md:w-1/3">${createProductCard(product)}</div>
-                        <div class="w-full md:w-2/3 flex flex-col justify-center">
-                            <h4 class="font-serif text-xl text-luxury-primary mb-3">Why this fits you:</h4>
-                            <p class="text-luxury-text leading-relaxed italic border-l-2 border-luxury-accent pl-5 py-2">"${rec.reason}"</p>
+            // Extract unique options for filters
+            const brands = ['All', ...new Set(products.map(p => p.brand))];
+            const colors = ['All', ...new Set(products.map(p => p.color))];
+            const types = ['All', ...new Set(products.map(p => p.type))];
+
+            container.innerHTML = `
+                <div class="mb-8 text-center fade-in px-4">
+                    <h1 class="text-3xl md:text-4xl font-serif text-luxury-primary mb-4 transition-colors">The Collection</h1>
+                    <p class="text-luxury-text max-w-2xl mx-auto text-sm md:text-base opacity-80 transition-colors">
+                        Browse our extensive catalog of premium eyewear. Use the filters below to refine your search by brand, aesthetic, or function.
+                    </p>
+                </div>
+
+                <div class="flex flex-col lg:flex-row gap-8 fade-in">
+                    <!-- Mobile Filter Toggle -->
+                    <div class="lg:hidden px-4 w-full">
+                        <button onclick="toggleMobileFilters()" class="w-full border border-luxury-primary text-luxury-primary py-3 text-sm uppercase font-bold flex justify-center items-center gap-2 hover:bg-luxury-primary hover:text-luxury-base transition-colors duration-300 rounded-sm">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                            <span>Filters & Sort</span>
+                        </button>
+                    </div>
+
+                    <!-- Sidebar Filters -->
+                    <aside id="shopFilters" class="hidden lg:block w-full lg:w-1/4 bg-luxury-surface p-6 rounded-lg shadow-sm h-fit sticky top-24 border border-luxury-secondary transition-colors duration-300 mx-4 lg:mx-0">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-bold tracking-widest uppercase text-sm text-luxury-primary transition-colors">Filters</h3>
+                            <button onclick="resetFilters()" class="text-xs text-luxury-accent hover:underline">Reset</button>
                         </div>
-                    </div>`;
-            }).join('');
+                        
+                        <!-- Brand Filter -->
+                        <div class="mb-6">
+                            <label class="block text-xs font-bold text-luxury-text opacity-80 uppercase mb-2 transition-colors">Brand</label>
+                            <select onchange="updateFilter('brand', this.value)" class="w-full bg-luxury-base border border-luxury-secondary rounded p-2 text-sm text-luxury-primary focus:border-luxury-accent focus:ring-0 outline-none transition-colors">
+                                ${brands.map(b => `<option value="${b}" ${appState.filters.brand === b ? 'selected' : ''}>${b}</option>`).join('')}
+                            </select>
+                        </div>
 
+                        <!-- Type Filter -->
+                        <div class="mb-6">
+                            <label class="block text-xs font-bold text-luxury-text opacity-80 uppercase mb-2 transition-colors">Type</label>
+                            <div class="space-y-2 text-luxury-primary">
+                                ${types.map(t => `
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="radio" name="type" value="${t}" onchange="updateFilter('type', this.value)" ${appState.filters.type === t ? 'checked' : ''} class="text-luxury-accent focus:ring-luxury-accent bg-luxury-base border-luxury-secondary">
+                                        <span class="text-sm transition-colors">${t}</span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Color Filter -->
+                        <div class="mb-6">
+                            <label class="block text-xs font-bold text-luxury-text opacity-80 uppercase mb-2 transition-colors">Color</label>
+                            <div class="flex flex-wrap gap-2">
+                                ${colors.filter(c => c !== 'All').map(c => `
+                                    <button onclick="updateFilter('color', '${appState.filters.color === c ? 'All' : c}')" 
+                                        class="w-6 h-6 rounded-full border ${appState.filters.color === c ? 'ring-2 ring-luxury-accent ring-offset-2 ring-offset-luxury-surface' : 'border-luxury-secondary'}"
+                                        style="background-color: ${getColorHex(c)}"
+                                        title="${c}"
+                                    ></button>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div class="pt-6 border-t border-luxury-secondary transition-colors">
+                             <label class="block text-xs font-bold text-luxury-text opacity-80 uppercase mb-2 transition-colors">Sort By</label>
+                             <select onchange="updateSort(this.value)" class="w-full bg-luxury-base border border-luxury-secondary rounded p-2 text-sm text-luxury-primary transition-colors">
+                                <option value="featured" ${appState.sortBy === 'featured' ? 'selected' : ''}>Featured</option>
+                                <option value="priceAsc" ${appState.sortBy === 'priceAsc' ? 'selected' : ''}>Price: Low to High</option>
+                                <option value="priceDesc" ${appState.sortBy === 'priceDesc' ? 'selected' : ''}>Price: High to Low</option>
+                                <option value="az" ${appState.sortBy === 'az' ? 'selected' : ''}>Name: A - Z</option>
+                             </select>
+                        </div>
+                    </aside>
+
+                    <!-- Product Grid -->
+                    <div class="w-full lg:w-3/4 px-4 lg:px-0">
+                        <div class="mb-4 text-sm text-luxury-text opacity-80 transition-colors">
+                            Showing <span class="font-bold text-luxury-primary">${filteredProducts.length}</span> results
+                        </div>
+                        
+                        ${filteredProducts.length > 0 ? `
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                ${filteredProducts.map(product => createProductCard(product)).join('')}
+                            </div>
+                        ` : `
+                            <div class="flex flex-col items-center justify-center h-64 bg-luxury-surface rounded-lg border border-dashed border-luxury-secondary transition-colors duration-300">
+                                <span class="text-4xl mb-4 text-luxury-secondary transition-colors">☹</span>
+                                <h3 class="text-lg font-medium text-luxury-text transition-colors">No frames match your criteria.</h3>
+                                <button onclick="resetFilters()" class="mt-4 text-luxury-accent underline">Clear all filters</button>
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderAbout(container) {
+            container.innerHTML = `
+                <div class="max-w-4xl mx-auto fade-in">
+                    <div class="text-center mb-16">
+                        <h1 class="text-4xl md:text-5xl font-serif text-luxury-primary mb-6 transition-colors">Built on Trust & Passion</h1>
+                        <div class="w-24 h-1 bg-luxury-accent mx-auto"></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-20">
+                        <div class="bg-luxury-surface border border-luxury-secondary h-80 rounded-lg flex items-center justify-center transition-colors duration-300">
+                            <div class="text-center p-8">
+                                <span class="text-6xl text-luxury-primary opacity-20 block mb-4 transition-colors">❝❞</span>
+                                <p class="font-serif italic text-luxury-text transition-colors">"Eyewear is not just an accessory. It is the framework through which you see the world."</p>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-serif mb-4 text-luxury-primary transition-colors">Our Difference</h3>
+                            <p class="text-luxury-text opacity-80 leading-relaxed mb-6 transition-colors">
+                                Unlike mass-market retailers, Lumina Optics is a sanctuary for independent eyewear design. 
+                                We have spent over two decades cultivating relationships with small-batch artisans in Berlin, Copenhagen, and Italy.
+                            </p>
+                            <p class="text-luxury-text opacity-80 leading-relaxed transition-colors">
+                                We believe in "Slow Fashion" for your face. Every frame in our collection is chosen for its engineering integrity, 
+                                material quality, and timeless aesthetic. When you choose Lumina, you aren't just buying glasses; 
+                                you are investing in a piece of functional art.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-luxury-surface p-8 rounded-lg shadow-sm border-t-4 border-t-luxury-accent border-x border-b border-luxury-secondary transition-colors duration-300">
+                        <h3 class="text-xl font-bold mb-6 text-center text-luxury-primary transition-colors">The Lumina Promise</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                            <div>
+                                <div class="text-3xl mb-2 text-luxury-primary transition-colors">✦</div>
+                                <h4 class="font-bold text-sm uppercase mb-2 text-luxury-primary transition-colors">Authenticity</h4>
+                                <p class="text-sm text-luxury-text opacity-80 transition-colors">Authorized retailer for every brand we carry. 100% genuine.</p>
+                            </div>
+                            <div>
+                                <div class="text-3xl mb-2 text-luxury-primary transition-colors">⚒</div>
+                                <h4 class="font-bold text-sm uppercase mb-2 text-luxury-primary transition-colors">Craftsmanship</h4>
+                                <p class="text-sm text-luxury-text opacity-80 transition-colors">We only stock frames made from premium acetate, titanium, and steel.</p>
+                            </div>
+                            <div>
+                                <div class="text-3xl mb-2 text-luxury-primary transition-colors">♥</div>
+                                <h4 class="font-bold text-sm uppercase mb-2 text-luxury-primary transition-colors">Care</h4>
+                                <p class="text-sm text-luxury-text opacity-80 transition-colors">Lifetime adjustments and comprehensive fitting support.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCart(container) {
+            if (appState.cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-20 fade-in">
+                        <h1 class="text-4xl font-serif text-luxury-primary mb-4 transition-colors">Your Cart is Empty</h1>
+                        <p class="text-luxury-text opacity-80 mb-8 transition-colors">Discover our collection of premium eyewear to find your perfect frame.</p>
+                        <button onclick="navigateTo('shop')" class="bg-luxury-primary text-luxury-base px-8 py-4 font-bold tracking-wider hover:bg-luxury-accent hover:text-white transition-colors duration-300">EXPLORE COLLECTION</button>
+                    </div>
+                `;
+                return;
+            }
+
+            const subtotal = appState.cart.reduce((sum, item) => sum + item.price, 0);
+            const total = subtotal; // Free shipping
+
+            let cartItemsHTML = appState.cart.map((item, index) => `
+                <div class="flex items-center gap-6 border-b border-luxury-secondary py-6 fade-in transition-colors">
+                    <div class="w-24 h-24 bg-luxury-secondary/30 flex items-center justify-center rounded border border-luxury-secondary/50 flex-shrink-0 transition-colors">
+                        <!-- CSS representation of glasses -->
+                        <div style="width: 60px; height: 20px; border: 3px solid ${item.imageColor}; border-radius: ${item.type === 'Sunglasses' ? '5px' : '10px'}; position: relative; display: flex; justify-content: space-between; align-items: center;">
+                            <div style="width: 10px; height: 3px; background: ${item.imageColor}; position: absolute; left: 42%; top: 40%;"></div>
+                        </div>
+                    </div>
+                    <div class="flex-grow">
+                        <span class="text-xs font-bold text-luxury-text opacity-60 uppercase tracking-wider transition-colors">${item.brand}</span>
+                        <h3 class="text-lg font-serif font-bold text-luxury-primary transition-colors">${item.name}</h3>
+                        <p class="text-sm text-luxury-text opacity-80 transition-colors">${item.color} | ${item.type}</p>
+                    </div>
+                    <div class="text-right flex-shrink-0 text-luxury-primary transition-colors">
+                        <p class="font-medium text-lg">$${item.price}</p>
+                        <button onclick="removeFromCart(${index})" class="text-xs text-red-500 uppercase tracking-widest mt-2 hover:underline">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="max-w-5xl mx-auto fade-in px-4 lg:px-0">
+                    <h1 class="text-3xl md:text-4xl font-serif text-luxury-primary mb-10 text-center transition-colors">Your Selection</h1>
+                    <div class="flex flex-col lg:flex-row gap-12">
+                        <!-- Cart Items -->
+                        <div class="w-full lg:w-2/3">
+                            ${cartItemsHTML}
+                        </div>
+                        
+                        <!-- Order Summary -->
+                        <div class="w-full lg:w-1/3">
+                            <div class="bg-luxury-surface p-8 rounded-lg border border-luxury-secondary shadow-sm sticky top-24 transition-colors duration-300">
+                                <h3 class="font-bold uppercase tracking-widest text-luxury-primary border-b border-luxury-secondary pb-4 mb-6 transition-colors">Order Summary</h3>
+                                
+                                <div class="flex justify-between mb-4 text-luxury-text transition-colors">
+                                    <span>Subtotal (${appState.cart.length} item${appState.cart.length !== 1 ? 's' : ''})</span>
+                                    <span>$${subtotal.toFixed(2)}</span>
+                                </div>
+                                <div class="flex justify-between mb-6 text-luxury-text transition-colors">
+                                    <span>Standard Shipping</span>
+                                    <span class="text-luxury-accent font-medium">Complimentary</span>
+                                </div>
+                                
+                                <div class="flex justify-between border-t border-luxury-secondary pt-6 mb-8 font-serif font-bold text-2xl text-luxury-primary transition-colors">
+                                    <span>Total</span>
+                                    <span>$${total.toFixed(2)}</span>
+                                </div>
+                                
+                                <button class="w-full bg-luxury-primary text-luxury-base py-4 font-bold tracking-wider hover:bg-luxury-accent hover:text-white transition-colors duration-300">
+                                    SECURE CHECKOUT
+                                </button>
+                                
+                                <div class="mt-6 text-center text-xs text-luxury-text opacity-60 flex justify-center items-center gap-2 transition-colors">
+                                    <span class="text-lg">🔒</span> <span>Encrypted Transaction</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderStylist(container) {
+            container.innerHTML = `
+                <div class="max-w-4xl mx-auto fade-in px-4 lg:px-0">
+                    <div class="text-center mb-10">
+                        <h1 class="text-4xl font-serif text-luxury-primary mb-4 flex justify-center items-center gap-3 transition-colors">
+                            <span class="text-luxury-accent">✨</span> Personal AI Stylist
+                        </h1>
+                        <p class="text-luxury-text opacity-80 max-w-2xl mx-auto transition-colors">
+                            Describe your facial features, personal style, and what you're looking for. 
+                            Our AI will curate the perfect frames from our collection just for you.
+                        </p>
+                    </div>
+
+                    <div class="bg-luxury-surface p-8 rounded-lg shadow-sm border border-luxury-secondary mb-10 transition-colors duration-300">
+                        <textarea id="stylePrompt" rows="4" class="w-full bg-luxury-base border border-luxury-secondary rounded p-4 text-sm text-luxury-primary focus:border-luxury-accent focus:ring-1 focus:ring-luxury-accent outline-none transition-all resize-none mb-4" placeholder="E.g., I have a square face and I work in a creative agency. I want something bold but professional, preferably in a dark color..."></textarea>
+                        <button id="stylistBtn" onclick="handleStyleSubmit()" class="w-full bg-luxury-primary text-luxury-base py-4 font-bold tracking-wider hover:bg-luxury-accent hover:text-white transition-colors duration-300 flex justify-center items-center gap-2">
+                            <span>DISCOVER MY FRAMES</span> <span class="text-xl">✨</span>
+                        </button>
+                    </div>
+
+                    <div id="stylistResults" class="hidden">
+                        <!-- Results injected here -->
+                    </div>
+                </div>
+            `;
+        }
+
+        async function handleStyleSubmit() {
+            const promptInput = document.getElementById('stylePrompt').value;
+            const resultsDiv = document.getElementById('stylistResults');
+            const btn = document.getElementById('stylistBtn');
+
+            if (!promptInput.trim()) return;
+
+            // Loading state
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>CURATING YOUR LOOK...</span>`;
+            resultsDiv.classList.remove('hidden');
             resultsDiv.innerHTML = `
-                <div class="fade-in mb-10">
-                    <div class="bg-luxury-secondary/30 p-8 rounded-lg border-t-4 border-luxury-accent">
-                        <p class="font-serif text-xl leading-relaxed text-luxury-primary">"${aiResult.introMessage}"</p>
-                        <p class="text-sm font-bold tracking-widest uppercase mt-4 text-luxury-accent">— Your Virtual Stylist</p>
-                    </div>
+                <div class="flex flex-col items-center justify-center py-12 text-luxury-text opacity-70 fade-in transition-colors">
+                    <div class="text-4xl mb-4 animate-pulse">✨</div>
+                    <p class="tracking-widest text-sm uppercase">Analyzing profile...</p>
                 </div>
-                <div>${recommendationsHTML}</div>`;
-        } catch (error) {
-            resultsDiv.innerHTML = `<div class="bg-red-50 text-red-500 p-4 rounded text-center border border-red-200">We apologize, but our stylist is currently unavailable. Please make sure your Node.js server is running!</div>`;
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = `<span>DISCOVER MY FRAMES</span><span class="text-xl">✨</span>`;
+            `;
+
+            try {
+                // Prepare context for the LLM
+                const inventoryJSON = JSON.stringify(products.map(p => ({
+                    id: p.id, brand: p.brand, name: p.name, type: p.type, color: p.color, material: p.material
+                })));
+
+                const systemInstruction = `You are an elite, high-end eyewear stylist at Lumina Optics. 
+                Based on the user's description of their style, face shape, and needs, select 2 to 3 frames from our inventory that fit them best.
+                Inventory: ${inventoryJSON}
+                Be luxurious, confident, and highly personalized in your 'introMessage'. Explain exactly why each frame works for them in the 'reason'.`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: promptInput }] }],
+                    systemInstruction: { parts: [{ text: systemInstruction }] },
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                introMessage: { type: "STRING" },
+                                recommendations: {
+                                    type: "ARRAY",
+                                    items: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            productId: { type: "INTEGER" },
+                                            reason: { type: "STRING" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+
+                const response = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                if (data.error) throw new Error(data.error.message);
+                
+                const aiResult = JSON.parse(data.candidates[0].content.parts[0].text);
+
+                // Render Results
+                let recommendationsHTML = aiResult.recommendations.map(rec => {
+                    const product = products.find(p => p.id === rec.productId);
+                    if (!product) return '';
+                    return `
+                        <div class="flex flex-col md:flex-row gap-8 bg-luxury-surface p-6 rounded-lg border border-luxury-secondary shadow-sm mb-6 fade-in transition-colors duration-300">
+                            <div class="w-full md:w-1/3">
+                                ${createProductCard(product)}
+                            </div>
+                            <div class="w-full md:w-2/3 flex flex-col justify-center">
+                                <h4 class="font-serif text-xl text-luxury-primary mb-3 transition-colors">Why this fits you:</h4>
+                                <p class="text-luxury-text opacity-90 leading-relaxed italic border-l-2 border-luxury-accent pl-5 py-2 transition-colors">"${rec.reason}"</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                resultsDiv.innerHTML = `
+                    <div class="fade-in mb-10">
+                        <div class="bg-luxury-secondary/20 p-8 rounded-lg border-t-4 border-luxury-accent transition-colors duration-300">
+                            <p class="font-serif text-xl leading-relaxed text-luxury-primary transition-colors">"${aiResult.introMessage}"</p>
+                            <p class="text-sm font-bold tracking-widest uppercase mt-4 text-luxury-accent">— Your Virtual Stylist</p>
+                        </div>
+                    </div>
+                    <div>${recommendationsHTML}</div>
+                `;
+
+            } catch (error) {
+                console.error("Gemini API Error:", error);
+                resultsDiv.innerHTML = `
+                    <div class="bg-red-500/10 text-red-500 p-4 rounded text-center border border-red-500/20 transition-colors">
+                        We apologize, but our stylist is currently unavailable. Please try again later.
+                    </div>
+                `;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<span>DISCOVER MY FRAMES</span> <span class="text-xl">✨</span>`;
+            }
         }
-    }
 
-    // ─── PRODUCT CARD ─────────────────────────────────────
-    function createProductCard(product) {
-        const visual = product.imageUrl
-            ? `<img src="${product.imageUrl}" alt="${product.name}"
-                    class="product-img"
-                    onerror="this.onerror=null; this.parentElement.innerHTML=\`${buildFrameSVG(product,'small').replace(/`/g,'\\`')}\`">`
-            : buildFrameSVG(product, 'small');
-
-        return `
-            <div class="group bg-white rounded-lg border border-luxury-secondary overflow-hidden hover:shadow-lg transition-all duration-300">
-                <div class="h-56 w-full flex items-center justify-center relative overflow-hidden bg-gray-50 cursor-pointer" onclick="openProductModal(${product.id})">
-                    <div class="w-full h-full flex items-center justify-center">${visual}</div>
-                    <div class="absolute inset-0 bg-luxury-primary/0 group-hover:bg-luxury-primary/10 transition-colors duration-300 flex items-end justify-center pb-4">
-                        <span class="bg-luxury-primary text-white text-xs px-4 py-2 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0 transform transition-transform">Quick View</span>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">${product.brand}</span>
-                        <span class="text-sm font-medium text-luxury-accent">${product.price ? '$' + product.price : '—'}</span>
-                    </div>
-                    <h3 class="text-lg font-serif font-bold text-luxury-primary mb-1 cursor-pointer hover:text-luxury-accent transition-colors" onclick="openProductModal(${product.id})">${product.name}</h3>
-                    <p class="text-sm text-gray-500 mb-4">${product.color} | ${product.material || ''}</p>
-                    <button onclick="addToCart(${product.id})" class="w-full border border-luxury-primary text-luxury-primary py-2 text-sm uppercase font-bold hover:bg-luxury-primary hover:text-white transition-colors duration-300">
-                        Add to Cart
-                    </button>
-                </div>
-            </div>`;
-    }
-
-    // ─── CART LOGIC ───────────────────────────────────────
-    function addToCart(productId) {
-        const product = products.find(p => p.id === productId);
-        if (product) { appState.cart.push(product); updateCartCount(); showToast(product); }
-    }
-    function removeFromCart(index) {
-        appState.cart.splice(index, 1);
-        updateCartCount();
-        renderCart(document.getElementById('app-content'));
-    }
-    function updateCartCount() {
-        document.querySelectorAll('.cart-count-badge').forEach(badge => {
-            badge.innerText = appState.cart.length;
-            appState.cart.length > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
-        });
-        const mobileBtn   = document.getElementById('mobile-cart-menu-item');
-        const mobileCount = document.getElementById('mobile-cart-count');
-        if (mobileBtn && mobileCount) {
-            mobileCount.innerText = appState.cart.length;
-            if (appState.cart.length > 0) { mobileBtn.classList.remove('hidden'); mobileBtn.classList.add('flex'); }
-            else                          { mobileBtn.classList.add('hidden');    mobileBtn.classList.remove('flex'); }
+        async function fetchWithRetry(url, options, retries = 5) {
+            const delays = [1000, 2000, 4000, 8000, 16000];
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return response;
+                } catch (e) {
+                    if (i === retries - 1) throw e;
+                    await new Promise(res => setTimeout(res, delays[i]));
+                }
+            }
         }
-    }
 
-    function showToast(product) {
-        const container = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        toast.className = 'bg-luxury-primary text-white p-4 rounded-sm shadow-2xl flex items-center gap-4 transform transition-all duration-500 translate-y-10 opacity-0 min-w-[300px] border-l-4 border-luxury-accent';
-        const thumbHTML = product.imageUrl
-            ? `<img src="${product.imageUrl}" class="w-12 h-12 object-contain rounded" alt="${product.name}">`
-            : `<div class="w-12 h-12 bg-white rounded flex items-center justify-center flex-shrink-0 p-1">${buildFrameSVG(product, 'small')}</div>`;
-        toast.innerHTML = `
-            ${thumbHTML}
-            <div class="flex-grow">
-                <p class="text-[10px] uppercase tracking-widest text-luxury-accent font-bold mb-1">Added to Cart</p>
-                <p class="font-serif text-sm">${product.name}</p>
-            </div>
-            <button onclick="navigateTo('cart'); this.parentElement.remove()" class="text-xs font-bold underline hover:text-luxury-accent transition-colors ml-4 uppercase tracking-wider">View</button>`;
-        container.appendChild(toast);
-        requestAnimationFrame(() => toast.classList.remove('translate-y-10', 'opacity-0'));
-        setTimeout(() => { toast.classList.add('opacity-0', 'translate-y-2'); setTimeout(() => toast.remove(), 500); }, 4000);
-    }
+        // --- HELPER FUNCTIONS ---
 
-    function showInfoToast(message) {
-        const container = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        toast.className = 'bg-luxury-primary text-white p-4 rounded-sm shadow-2xl transform transition-all duration-500 translate-y-10 opacity-0 min-w-[300px] border-l-4 border-luxury-accent text-sm font-medium';
-        toast.textContent = message;
-        container.appendChild(toast);
-        requestAnimationFrame(() => toast.classList.remove('translate-y-10', 'opacity-0'));
-        setTimeout(() => { toast.classList.add('opacity-0', 'translate-y-2'); setTimeout(() => toast.remove(), 500); }, 5000);
-    }
+        function createProductCard(product) {
+            return `
+                <div class="group bg-luxury-surface rounded-lg border border-luxury-secondary overflow-hidden hover:shadow-lg transition-all duration-300">
+                    <!-- Simulated Image Area -->
+                    <div class="h-56 w-full flex items-center justify-center relative overflow-hidden bg-luxury-secondary/30 transition-colors">
+                         <!-- Visual representation of the glasses using CSS shapes/colors -->
+                         <div class="transition-transform duration-500 transform group-hover:scale-110">
+                            <div style="
+                                width: 140px; 
+                                height: 50px; 
+                                border: 4px solid ${product.imageColor}; 
+                                border-radius: ${product.type === 'Sunglasses' ? '10px' : '20px'};
+                                position: relative;
+                                box-shadow: 2px 4px 10px rgba(0,0,0,0.1);
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                            ">
+                                <div style="width: 20px; height: 4px; background: ${product.imageColor}; position: absolute; left: 45%; top: 40%;"></div> <!-- Bridge -->
+                            </div>
+                            <div class="mt-4 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <span class="bg-luxury-primary text-luxury-base text-xs px-2 py-1 uppercase tracking-widest transition-colors">Quick View</span>
+                            </div>
+                         </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-bold text-luxury-text opacity-60 uppercase tracking-wider transition-colors">${product.brand}</span>
+                            <span class="text-sm font-medium text-luxury-accent">$${product.price}</span>
+                        </div>
+                        <h3 class="text-lg font-serif font-bold text-luxury-primary mb-1 transition-colors">${product.name}</h3>
+                        <p class="text-sm text-luxury-text opacity-80 mb-4 transition-colors">${product.color} | ${product.material}</p>
+                        
+                        <button onclick="addToCart(${product.id})" class="w-full border border-luxury-primary text-luxury-primary py-2 text-sm uppercase font-bold hover:bg-luxury-primary hover:text-luxury-base transition-colors duration-300">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
 
-    // ─── HELPERS ──────────────────────────────────────────
-    function getColorHex(colorName) {
-        return { Black: '#000000', Gold: '#D4AF37', Tortoise: '#5C4033', Silver: '#C0C0C0', Blue: '#1E3A8A' }[colorName] || '#CCCCCC';
-    }
-    function updateFilter(key, value) { appState.filters[key] = value; renderShop(document.getElementById('app-content')); }
-    function updateSort(value) { appState.sortBy = value; renderShop(document.getElementById('app-content')); }
-    function resetFilters() { appState.filters = { brand: 'All', color: 'All', type: 'All' }; appState.sortBy = 'featured'; renderShop(document.getElementById('app-content')); }
-    function toggleMobileFilters() { document.getElementById('shopFilters').classList.toggle('hidden'); }
-    function toggleGroupByBrand() { appState.groupByBrand = !appState.groupByBrand; renderShop(document.getElementById('app-content')); }
+        // --- CART LOGIC ---
 
-    // ─── INIT ─────────────────────────────────────────────
-    window.onload = async function() {
-        await loadProducts();
-        updateCartCount();
-        renderPage('home');
-    };
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                appState.cart.push(product);
+                updateCartCount();
+                showToast(product);
+            }
+        }
+
+        function removeFromCart(index) {
+            appState.cart.splice(index, 1);
+            updateCartCount();
+            renderCart(document.getElementById('app-content'));
+        }
+
+        function updateCartCount() {
+            const badges = document.querySelectorAll('.cart-count-badge');
+            badges.forEach(badge => {
+                badge.innerText = appState.cart.length;
+                if (appState.cart.length > 0) {
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            });
+
+            // Handle Mobile Menu Cart Item visibility
+            const mobileCartBtn = document.getElementById('mobile-cart-menu-item');
+            const mobileCartCount = document.getElementById('mobile-cart-count');
+            if (mobileCartBtn && mobileCartCount) {
+                mobileCartCount.innerText = appState.cart.length;
+                if (appState.cart.length > 0) {
+                    mobileCartBtn.classList.remove('hidden');
+                    mobileCartBtn.classList.add('flex');
+                } else {
+                    mobileCartBtn.classList.add('hidden');
+                    mobileCartBtn.classList.remove('flex');
+                }
+            }
+        }
+
+        function showToast(product) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            // Tailwind classes for styling the toast
+            toast.className = 'bg-luxury-primary text-luxury-base p-4 rounded-sm shadow-2xl flex items-center gap-4 transform transition-all duration-500 translate-y-10 opacity-0 min-w-[300px] border-l-4 border-luxury-accent';
+            
+            toast.innerHTML = `
+                <div class="w-12 h-12 bg-luxury-surface rounded flex items-center justify-center flex-shrink-0 transition-colors">
+                    <div style="width: 24px; height: 8px; border: 2px solid ${product.imageColor}; border-radius: 3px; position: relative;">
+                         <div style="width: 4px; height: 1px; background: ${product.imageColor}; position: absolute; left: 40%; top: 40%;"></div>
+                    </div>
+                </div>
+                <div class="flex-grow">
+                    <p class="text-[10px] uppercase tracking-widest text-luxury-accent font-bold mb-1">Added to Cart</p>
+                    <p class="font-serif text-sm">${product.name}</p>
+                </div>
+                <button onclick="navigateTo('cart'); this.parentElement.remove()" class="text-xs font-bold underline text-luxury-base hover:text-luxury-accent transition-colors ml-4 uppercase tracking-wider">
+                    View
+                </button>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Trigger animation in
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+            });
+
+            // Remove toast automatically after 4 seconds
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 500); // wait for fade out
+            }, 4000);
+        }
+
+        function getColorHex(colorName) {
+            const map = {
+                'Black': '#000000',
+                'Gold': '#D4AF37',
+                'Tortoise': '#5C4033',
+                'Silver': '#C0C0C0',
+                'Blue': '#1E3A8A'
+            };
+            return map[colorName] || '#CCCCCC';
+        }
+
+        function updateFilter(key, value) {
+            appState.filters[key] = value;
+            renderShop(document.getElementById('app-content'));
+        }
+
+        function updateSort(value) {
+            appState.sortBy = value;
+            renderShop(document.getElementById('app-content'));
+        }
+
+        function resetFilters() {
+            appState.filters = { brand: 'All', color: 'All', type: 'All' };
+            appState.sortBy = 'featured';
+            renderShop(document.getElementById('app-content'));
+        }
+
+        function toggleMobileFilters() {
+            const filters = document.getElementById('shopFilters');
+            filters.classList.toggle('hidden');
+        }
+
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            updateThemeIcons();
+            updateCartCount();
+            renderPage('home');
+        };
+
     </script>
 </body>
 </html>
