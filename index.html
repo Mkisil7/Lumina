@@ -71,6 +71,10 @@
                     <button onclick="navigateTo('shop')" class="text-luxury-text hover:text-luxury-accent transition-colors duration-300 font-medium tracking-wide">COLLECTION</button>
                     <button onclick="navigateTo('stylist')" class="text-luxury-accent hover:text-luxury-primary transition-colors duration-300 font-medium tracking-wide flex items-center gap-1">✨ AI STYLIST</button>
                     <button onclick="navigateTo('about')" class="text-luxury-text hover:text-luxury-accent transition-colors duration-300 font-medium tracking-wide">OUR STORY</button>
+                    <button onclick="navigateTo('cart')" class="text-luxury-text hover:text-luxury-accent transition-colors duration-300 font-medium tracking-wide relative">
+                        CART
+                        <span class="cart-count-badge absolute -top-2 -right-3 bg-luxury-accent text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center hidden">0</span>
+                    </button>
                 </div>
 
                 <!-- Mobile Menu Button -->
@@ -89,6 +93,12 @@
                 <button onclick="navigateTo('shop'); toggleMobileMenu()" class="block w-full text-left px-4 py-4 text-luxury-text hover:bg-luxury-secondary hover:text-luxury-primary rounded-md text-lg font-medium border-b border-luxury-secondary/30 transition-colors">Collection</button>
                 <button onclick="navigateTo('stylist'); toggleMobileMenu()" class="block w-full text-left px-4 py-4 text-luxury-accent hover:bg-luxury-secondary hover:text-luxury-primary rounded-md text-lg font-medium border-b border-luxury-secondary/30 transition-colors">✨ AI Stylist</button>
                 <button onclick="navigateTo('about'); toggleMobileMenu()" class="block w-full text-left px-4 py-4 text-luxury-text hover:bg-luxury-secondary hover:text-luxury-primary rounded-md text-lg font-medium transition-colors">Our Story</button>
+                
+                <!-- Mobile Cart Button (Only visible when items are in cart) -->
+                <button id="mobile-cart-menu-item" onclick="navigateTo('cart'); toggleMobileMenu()" class="hidden w-full text-left px-4 py-4 text-luxury-primary bg-luxury-secondary/30 hover:bg-luxury-secondary rounded-md text-lg font-bold border-t border-luxury-secondary/50 transition-colors justify-between items-center mt-2">
+                    <span>View Cart</span>
+                    <span id="mobile-cart-count" class="bg-luxury-accent text-white text-[12px] px-2.5 py-0.5 rounded-full">0</span>
+                </button>
             </div>
         </div>
     </nav>
@@ -128,6 +138,9 @@
         </div>
     </footer>
 
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-3"></div>
+
     <!-- JavaScript Application Logic -->
     <script>
         // --- DATA STORE ---
@@ -156,12 +169,9 @@
                 color: 'All',
                 type: 'All'
             },
-            sortBy: 'featured'
+            sortBy: 'featured',
+            cart: []
         };
-
-        // Gemini API Setup
-        // PASTE YOUR GOOGLE AI STUDIO API KEY HERE:
-        const apiKey = "YOUR_ACTUAL_API_KEY_HERE";
 
         // --- NAVIGATION LOGIC ---
 
@@ -201,6 +211,9 @@
                     break;
                 case 'about':
                     renderAbout(contentDiv);
+                    break;
+                case 'cart':
+                    renderCart(contentDiv);
                     break;
                 default:
                     renderHome(contentDiv);
@@ -438,6 +451,83 @@
             `;
         }
 
+        function renderCart(container) {
+            if (appState.cart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-20 fade-in">
+                        <h1 class="text-4xl font-serif text-luxury-primary mb-4">Your Cart is Empty</h1>
+                        <p class="text-luxury-text mb-8">Discover our collection of premium eyewear to find your perfect frame.</p>
+                        <button onclick="navigateTo('shop')" class="bg-luxury-primary text-white px-8 py-4 font-bold tracking-wider hover:bg-luxury-accent transition-colors duration-300">EXPLORE COLLECTION</button>
+                    </div>
+                `;
+                return;
+            }
+
+            const subtotal = appState.cart.reduce((sum, item) => sum + item.price, 0);
+            const total = subtotal; // Free shipping
+
+            let cartItemsHTML = appState.cart.map((item, index) => `
+                <div class="flex items-center gap-6 border-b border-luxury-secondary py-6 fade-in">
+                    <div class="w-24 h-24 bg-gray-50 flex items-center justify-center rounded border border-gray-100 flex-shrink-0">
+                        <!-- CSS representation of glasses -->
+                        <div style="width: 60px; height: 20px; border: 3px solid ${item.imageColor}; border-radius: ${item.type === 'Sunglasses' ? '5px' : '10px'}; position: relative; display: flex; justify-content: space-between; align-items: center;">
+                            <div style="width: 10px; height: 3px; background: ${item.imageColor}; position: absolute; left: 42%; top: 40%;"></div>
+                        </div>
+                    </div>
+                    <div class="flex-grow">
+                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">${item.brand}</span>
+                        <h3 class="text-lg font-serif font-bold text-luxury-primary">${item.name}</h3>
+                        <p class="text-sm text-gray-500">${item.color} | ${item.type}</p>
+                    </div>
+                    <div class="text-right flex-shrink-0">
+                        <p class="font-medium text-lg">$${item.price}</p>
+                        <button onclick="removeFromCart(${index})" class="text-xs text-red-500 uppercase tracking-widest mt-2 hover:underline">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="max-w-5xl mx-auto fade-in">
+                    <h1 class="text-3xl md:text-4xl font-serif text-luxury-primary mb-10 text-center">Your Selection</h1>
+                    <div class="flex flex-col lg:flex-row gap-12">
+                        <!-- Cart Items -->
+                        <div class="w-full lg:w-2/3">
+                            ${cartItemsHTML}
+                        </div>
+                        
+                        <!-- Order Summary -->
+                        <div class="w-full lg:w-1/3">
+                            <div class="bg-white p-8 rounded-lg border border-luxury-secondary shadow-sm sticky top-24">
+                                <h3 class="font-bold uppercase tracking-widest border-b border-luxury-secondary pb-4 mb-6">Order Summary</h3>
+                                
+                                <div class="flex justify-between mb-4 text-luxury-text">
+                                    <span>Subtotal (${appState.cart.length} item${appState.cart.length !== 1 ? 's' : ''})</span>
+                                    <span>$${subtotal.toFixed(2)}</span>
+                                </div>
+                                <div class="flex justify-between mb-6 text-luxury-text">
+                                    <span>Standard Shipping</span>
+                                    <span class="text-luxury-accent font-medium">Complimentary</span>
+                                </div>
+                                
+                                <div class="flex justify-between border-t border-luxury-secondary pt-6 mb-8 font-serif font-bold text-2xl text-luxury-primary">
+                                    <span>Total</span>
+                                    <span>$${total.toFixed(2)}</span>
+                                </div>
+                                
+                                <button class="w-full bg-luxury-primary text-white py-4 font-bold tracking-wider hover:bg-luxury-accent transition-colors duration-300">
+                                    SECURE CHECKOUT
+                                </button>
+                                
+                                <div class="mt-6 text-center text-xs text-gray-400 flex justify-center items-center gap-2">
+                                    <span class="text-lg">🔒</span> <span>Encrypted Transaction</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         function renderStylist(container) {
             container.innerHTML = `
                 <div class="max-w-4xl mx-auto fade-in">
@@ -472,7 +562,7 @@
 
             if (!promptInput.trim()) return;
 
-            // Loading state
+            // Loading state UI
             btn.disabled = true;
             btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>CURATING YOUR LOOK...</span>`;
             resultsDiv.classList.remove('hidden');
@@ -484,52 +574,41 @@
             `;
 
             try {
-                // Prepare context for the LLM
+                // Get our inventory ready to send to the backend
                 const inventoryJSON = JSON.stringify(products.map(p => ({
                     id: p.id, brand: p.brand, name: p.name, type: p.type, color: p.color, material: p.material
                 })));
 
-                const systemInstruction = `You are an elite, high-end eyewear stylist at Lumina Optics. 
+                // Combine your system instructions, inventory, and the user's prompt
+                const combinedPrompt = `You are an elite, high-end eyewear stylist at Lumina Optics. 
                 Based on the user's description of their style, face shape, and needs, select 2 to 3 frames from our inventory that fit them best.
                 Inventory: ${inventoryJSON}
-                Be luxurious, confident, and highly personalized in your 'introMessage'. Explain exactly why each frame works for them in the 'reason'.`;
+                User Request: ${promptInput}
+                
+                IMPORTANT: You must respond ONLY with a valid JSON object. Do not include markdown formatting. 
+                The JSON must match this structure exactly:
+                {
+                    "introMessage": "Your luxurious, confident intro message explaining the vibe.",
+                    "recommendations": [
+                        { "productId": 1, "reason": "Specific reason this frame works for them." }
+                    ]
+                }`;
 
-                const payload = {
-                    contents: [{ parts: [{ text: promptInput }] }],
-                    systemInstruction: { parts: [{ text: systemInstruction }] },
-                    generationConfig: {
-                        responseMimeType: "application/json",
-                        responseSchema: {
-                            type: "OBJECT",
-                            properties: {
-                                introMessage: { type: "STRING" },
-                                recommendations: {
-                                    type: "ARRAY",
-                                    items: {
-                                        type: "OBJECT",
-                                        properties: {
-                                            productId: { type: "INTEGER" },
-                                            reason: { type: "STRING" }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                };
-
-                const response = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                // 1. CALL YOUR SECURE LOCAL BACKEND
+                const response = await fetch('http://localhost:3000/api/stylist', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({ userPrompt: combinedPrompt })
                 });
 
                 const data = await response.json();
-                if (data.error) throw new Error(data.error.message);
-                
-                const aiResult = JSON.parse(data.candidates[0].content.parts[0].text);
+                if (data.error) throw new Error(data.error);
 
-                // Render Results
+                // 2. PARSE THE AI RESULT (Cleaning up any markdown the AI might accidentally add)
+                let cleanText = data.reply.replace(/```json/g, '').replace(/```/g, '').trim();
+                const aiResult = JSON.parse(cleanText);
+
+                // 3. RENDER RESULTS TO THE UI
                 let recommendationsHTML = aiResult.recommendations.map(rec => {
                     const product = products.find(p => p.id === rec.productId);
                     if (!product) return '';
@@ -557,13 +636,14 @@
                 `;
 
             } catch (error) {
-                console.error("Gemini API Error:", error);
+                console.error("Stylist Error:", error);
                 resultsDiv.innerHTML = `
                     <div class="bg-red-50 text-red-500 p-4 rounded text-center border border-red-200">
-                        We apologize, but our stylist is currently unavailable. Please try again later.
+                        We apologize, but our stylist is currently unavailable. Please make sure your Node.js server is running!
                     </div>
                 `;
             } finally {
+                // Reset the button state
                 btn.disabled = false;
                 btn.innerHTML = `<span>DISCOVER MY FRAMES</span> <span class="text-xl">✨</span>`;
             }
@@ -619,12 +699,91 @@
                         <h3 class="text-lg font-serif font-bold text-luxury-primary mb-1">${product.name}</h3>
                         <p class="text-sm text-gray-500 mb-4">${product.color} | ${product.material}</p>
                         
-                        <button onclick="alert('Added ${product.name} to cart!')" class="w-full border border-luxury-primary text-luxury-primary py-2 text-sm uppercase font-bold hover:bg-luxury-primary hover:text-white transition-colors duration-300">
+                        <button onclick="addToCart(${product.id})" class="w-full border border-luxury-primary text-luxury-primary py-2 text-sm uppercase font-bold hover:bg-luxury-primary hover:text-white transition-colors duration-300">
                             Add to Cart
                         </button>
                     </div>
                 </div>
             `;
+        }
+
+        // --- CART LOGIC ---
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                appState.cart.push(product);
+                updateCartCount();
+                showToast(product);
+            }
+        }
+
+        function removeFromCart(index) {
+            appState.cart.splice(index, 1);
+            updateCartCount();
+            renderCart(document.getElementById('app-content'));
+        }
+
+        function updateCartCount() {
+            const badges = document.querySelectorAll('.cart-count-badge');
+            badges.forEach(badge => {
+                badge.innerText = appState.cart.length;
+                if (appState.cart.length > 0) {
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            });
+
+            // Handle Mobile Menu Cart Item visibility
+            const mobileCartBtn = document.getElementById('mobile-cart-menu-item');
+            const mobileCartCount = document.getElementById('mobile-cart-count');
+            if (mobileCartBtn && mobileCartCount) {
+                mobileCartCount.innerText = appState.cart.length;
+                if (appState.cart.length > 0) {
+                    mobileCartBtn.classList.remove('hidden');
+                    mobileCartBtn.classList.add('flex');
+                } else {
+                    mobileCartBtn.classList.add('hidden');
+                    mobileCartBtn.classList.remove('flex');
+                }
+            }
+        }
+
+        function showToast(product) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            // Tailwnid classes for styling the toast
+            toast.className = 'bg-luxury-primary text-white p-4 rounded-sm shadow-2xl flex items-center gap-4 transform transition-all duration-500 translate-y-10 opacity-0 min-w-[300px] border-l-4 border-luxury-accent';
+            
+            toast.innerHTML = `
+                <div class="w-12 h-12 bg-white rounded flex items-center justify-center flex-shrink-0">
+                    <div style="width: 24px; height: 8px; border: 2px solid ${product.imageColor}; border-radius: 3px; position: relative;">
+                         <div style="width: 4px; height: 1px; background: ${product.imageColor}; position: absolute; left: 40%; top: 40%;"></div>
+                    </div>
+                </div>
+                <div class="flex-grow">
+                    <p class="text-[10px] uppercase tracking-widest text-luxury-accent font-bold mb-1">Added to Cart</p>
+                    <p class="font-serif text-sm">${product.name}</p>
+                </div>
+                <button onclick="navigateTo('cart'); this.parentElement.remove()" class="text-xs font-bold underline hover:text-luxury-accent transition-colors ml-4 uppercase tracking-wider">
+                    View
+                </button>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Trigger animation in
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+            });
+
+            // Remove toast automatically after 4 seconds
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 500); // wait for fade out
+            }, 4000);
         }
 
         function getColorHex(colorName) {
@@ -661,6 +820,7 @@
 
         // --- INITIALIZATION ---
         window.onload = function() {
+            updateCartCount();
             renderPage('home');
         };
 
