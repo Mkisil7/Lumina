@@ -66,10 +66,8 @@
             opacity: 1;
         }
 
-        /* SVG frame illustration */
         .frame-svg { filter: drop-shadow(0 4px 12px rgba(0,0,0,0.12)); }
 
-        /* Prompt chips */
         .prompt-chip {
             cursor: pointer;
             border: 1px solid #E5E2DD;
@@ -81,16 +79,28 @@
             transition: all 0.2s ease;
             white-space: nowrap;
         }
-        .prompt-chip:hover {
-            border-color: #D4AF37;
-            color: #D4AF37;
-            background: #FDFBF5;
+        .prompt-chip:hover { border-color: #D4AF37; color: #D4AF37; background: #FDFBF5; }
+        .prompt-chip.active { background: #2C2C2C; color: #D4AF37; border-color: #2C2C2C; }
+
+        /* Brand section header */
+        .brand-section-header {
+            border-left: 4px solid #D4AF37;
+            padding-left: 1rem;
         }
-        .prompt-chip.active {
-            background: #2C2C2C;
-            color: #D4AF37;
-            border-color: #2C2C2C;
+
+        /* Real product image */
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 1rem;
+            transition: transform 0.4s ease;
         }
+        .group:hover .product-img { transform: scale(1.05); }
+
+        /* Sync pulse */
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spin { animation: spin 1s linear infinite; }
     </style>
 </head>
 <body class="bg-luxury-base text-luxury-primary font-sans antialiased min-h-screen flex flex-col">
@@ -134,55 +144,30 @@
         </div>
     </nav>
 
-    <!-- ══════════════════════════════════════════
-         PRODUCT DETAIL MODAL
-    ══════════════════════════════════════════ -->
-    <div id="product-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4"
-         onclick="closeModal(event)">
-        <!-- Backdrop -->
+    <!-- PRODUCT DETAIL MODAL -->
+    <div id="product-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4" onclick="closeModal(event)">
         <div class="absolute inset-0 bg-luxury-primary/60 backdrop-blur-sm"></div>
-
-        <!-- Panel -->
         <div id="modal-panel" class="relative bg-luxury-base w-full max-w-3xl rounded-xl overflow-hidden shadow-2xl border border-luxury-secondary" onclick="event.stopPropagation()">
-            
-            <!-- Close button -->
             <button onclick="closeProductModal()" class="absolute top-4 right-5 z-10 text-luxury-text hover:text-luxury-accent text-2xl leading-none transition-colors" aria-label="Close">&times;</button>
-
             <div class="flex flex-col md:flex-row">
-                <!-- Left — visual -->
-                <div id="modal-visual" class="w-full md:w-2/5 bg-white flex items-center justify-center p-12 min-h-[260px] md:min-h-[400px]">
-                    <!-- SVG injected via JS -->
-                </div>
-
-                <!-- Right — details -->
+                <div id="modal-visual" class="w-full md:w-2/5 bg-white flex items-center justify-center p-12 min-h-[260px] md:min-h-[400px]"></div>
                 <div class="w-full md:w-3/5 p-8 md:p-10 flex flex-col justify-between">
                     <div>
                         <span id="modal-brand" class="text-xs font-bold tracking-widest uppercase text-gray-400"></span>
                         <h2 id="modal-name" class="font-serif text-3xl font-bold text-luxury-primary mt-1 mb-2"></h2>
                         <p id="modal-type-color" class="text-sm text-luxury-text mb-6"></p>
-
-                        <!-- Spec grid -->
-                        <div id="modal-specs" class="grid grid-cols-2 gap-4 mb-8">
-                            <!-- injected -->
-                        </div>
-
-                        <!-- Gold divider -->
+                        <div id="modal-specs" class="grid grid-cols-2 gap-4 mb-8"></div>
                         <div class="w-12 h-px bg-luxury-accent mb-6"></div>
-
                         <p id="modal-desc" class="text-sm text-luxury-text leading-relaxed"></p>
                     </div>
-
                     <div class="mt-8 flex flex-col gap-3">
                         <div class="flex items-baseline justify-between mb-2">
                             <span class="text-3xl font-serif font-bold text-luxury-primary" id="modal-price"></span>
                             <span class="text-xs text-luxury-text">Free shipping · Lifetime adjustments</span>
                         </div>
-                        <button id="modal-add-btn" class="w-full bg-luxury-primary text-white py-4 font-bold tracking-wider hover:bg-luxury-accent transition-colors duration-300 text-sm">
-                            ADD TO CART
-                        </button>
-                        <button onclick="closeProductModal()" class="w-full border border-luxury-secondary text-luxury-text py-3 text-sm hover:border-luxury-primary transition-colors duration-300">
-                            Continue Browsing
-                        </button>
+                        <button id="modal-add-btn" class="w-full bg-luxury-primary text-white py-4 font-bold tracking-wider hover:bg-luxury-accent transition-colors duration-300 text-sm">ADD TO CART</button>
+                        <button onclick="closeProductModal()" class="w-full border border-luxury-secondary text-luxury-text py-3 text-sm hover:border-luxury-primary transition-colors duration-300">Continue Browsing</button>
+                        <a id="modal-source-link" href="#" target="_blank" class="text-center text-xs text-luxury-accent underline hidden">View on brand website ↗</a>
                     </div>
                 </div>
             </div>
@@ -217,23 +202,16 @@
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-3"></div>
 
     <script>
-    // ─── DATA ───────────────────────────────────────────────
-    const products = [
-        { id: 1,  brand: 'ic! berlin', name: 'The Haptic',      type: 'Optical',     color: 'Black',    price: 540, weight: 14, material: 'Stainless Steel', imageColor: '#2C2C2C', shape: 'rect' },
-        { id: 2,  brand: 'ic! berlin', name: 'Urban Pulse',     type: 'Sunglasses',  color: 'Gold',     price: 620, weight: 16, material: 'Stainless Steel', imageColor: '#D4AF37', shape: 'round' },
-        { id: 3,  brand: 'Tom Ford',   name: 'FT5532',          type: 'Optical',     color: 'Tortoise', price: 495, weight: 28, material: 'Acetate',         imageColor: '#5C4033', shape: 'rect' },
-        { id: 4,  brand: 'Tom Ford',   name: 'Snowdon',         type: 'Sunglasses',  color: 'Black',    price: 450, weight: 32, material: 'Acetate',         imageColor: '#1A1A1A', shape: 'square' },
-        { id: 5,  brand: 'Talla',      name: 'Geometrico',      type: 'Optical',     color: 'Silver',   price: 480, weight: 18, material: 'Titanium',        imageColor: '#C0C0C0', shape: 'rect' },
-        { id: 6,  brand: 'Talla',      name: 'Sun Architect',   type: 'Sunglasses',  color: 'Blue',     price: 510, weight: 20, material: 'Titanium',        imageColor: '#4682B4', shape: 'aviator' },
-        { id: 7,  brand: 'Orgreen',    name: 'Quantum High',    type: 'Optical',     color: 'Blue',     price: 580, weight: 12, material: 'Titanium',        imageColor: '#1E3A8A', shape: 'round' },
-        { id: 8,  brand: 'Orgreen',    name: 'Nordic Light',    type: 'Sunglasses',  color: 'Silver',   price: 610, weight: 15, material: 'Polyamide',       imageColor: '#A0AEC0', shape: 'rect' },
-        { id: 9,  brand: 'ic! berlin', name: 'Silk Collection', type: 'Optical',     color: 'Gold',     price: 590, weight: 11, material: 'Stainless Steel', imageColor: '#C5A000', shape: 'round' },
-        { id: 10, brand: 'Tom Ford',   name: 'Blue Block',      type: 'Optical',     color: 'Black',    price: 420, weight: 30, material: 'Acetate',         imageColor: '#000000', shape: 'rect' },
-        { id: 11, brand: 'Orgreen',    name: 'Havana Nights',   type: 'Sunglasses',  color: 'Tortoise', price: 550, weight: 19, material: 'Titanium',        imageColor: '#8B4513', shape: 'aviator' },
-        { id: 12, brand: 'Talla',      name: 'Modernist',       type: 'Optical',     color: 'Tortoise', price: 460, weight: 22, material: 'Acetate',         imageColor: '#6F4E37', shape: 'square' }
-    ];
+    // ─── STATE ────────────────────────────────────────────
+    let products = []; // populated from server
+    let appState = {
+        currentPage: 'home',
+        filters: { brand: 'All', color: 'All', type: 'All' },
+        sortBy: 'featured',
+        groupByBrand: false,   // ← toggle brand grouping
+        cart: []
+    };
 
-    // Descriptive blurbs per product
     const productDescriptions = {
         1:  'Engineered from a single sheet of stainless steel with ic! berlin\'s signature screwless hinge, The Haptic is feather-light and virtually indestructible — the ideal everyday optical frame for the minimalist.',
         2:  'Urban Pulse channels modernist architecture into a sunglass silhouette. The round lenses and gold-tone steel bridge create a statement that is confident without being loud.',
@@ -249,59 +227,52 @@
         12: 'Modernist earns its name through restraint: clean angular acetate, no embellishment, and an unfussy tortoise finish that pairs with everything from a suit to a weekend jacket.'
     };
 
-    // ── STATE ──────────────────────────────────────────────
-    let appState = {
-        currentPage: 'home',
-        filters: { brand: 'All', color: 'All', type: 'All' },
-        sortBy: 'featured',
-        cart: []
-    };
+    // ─── LOAD PRODUCTS FROM SERVER ────────────────────────
+    async function loadProducts() {
+        try {
+            const res  = await fetch('http://localhost:3000/api/products');
+            const data = await res.json();
+            products = data;
+        } catch (err) {
+            console.warn('Could not reach server, using empty catalogue.');
+            products = [];
+        }
+    }
 
-    // ─── SVG FRAME ILLUSTRATION ────────────────────────────
+    // ─── SVG FRAME ILLUSTRATION ───────────────────────────
     function buildFrameSVG(product, size = 'large') {
-        const c = product.imageColor;
-        const isSun = product.type === 'Sunglasses';
-        const sw = size === 'large' ? 4 : 3;         // stroke-width
-        const scale = size === 'large' ? 1 : 0.65;
+        const c          = product.imageColor || '#2C2C2C';
+        const isSun      = product.type === 'Sunglasses';
+        const sw         = size === 'large' ? 4 : 3;
+        const scale      = size === 'large' ? 1 : 0.65;
         const lensOpacity = isSun ? '0.18' : '0.04';
 
         const shapes = {
-            round: `
-                <g transform="scale(${scale}) translate(${size==='large'?0:30}, ${size==='large'?0:20})">
-                  <!-- Left lens -->
+            round: `<g transform="scale(${scale}) translate(${size==='large'?0:30}, ${size==='large'?0:20})">
                   <circle cx="70" cy="60" r="38" fill="${c}" fill-opacity="${lensOpacity}" stroke="${c}" stroke-width="${sw}"/>
-                  <!-- Right lens -->
                   <circle cx="170" cy="60" r="38" fill="${c}" fill-opacity="${lensOpacity}" stroke="${c}" stroke-width="${sw}"/>
-                  <!-- Bridge -->
                   <path d="M108 60 Q120 52 132 60" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round"/>
-                  <!-- Left temple -->
                   <line x1="32" y1="45" x2="-20" y2="52" stroke="${c}" stroke-width="${sw-1}" stroke-linecap="round"/>
-                  <!-- Right temple -->
                   <line x1="208" y1="45" x2="260" y2="52" stroke="${c}" stroke-width="${sw-1}" stroke-linecap="round"/>
                 </g>`,
-            rect: `
-                <g transform="scale(${scale}) translate(${size==='large'?0:30}, ${size==='large'?0:20})">
+            rect: `<g transform="scale(${scale}) translate(${size==='large'?0:30}, ${size==='large'?0:20})">
                   <rect x="32" y="32" width="76" height="52" rx="10" ry="10" fill="${c}" fill-opacity="${lensOpacity}" stroke="${c}" stroke-width="${sw}"/>
                   <rect x="132" y="32" width="76" height="52" rx="10" ry="10" fill="${c}" fill-opacity="${lensOpacity}" stroke="${c}" stroke-width="${sw}"/>
                   <path d="M108 56 Q120 48 132 56" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round"/>
                   <line x1="32" y1="44" x2="-14" y2="50" stroke="${c}" stroke-width="${sw-1}" stroke-linecap="round"/>
                   <line x1="208" y1="44" x2="254" y2="50" stroke="${c}" stroke-width="${sw-1}" stroke-linecap="round"/>
                 </g>`,
-            square: `
-                <g transform="scale(${scale}) translate(${size==='large'?0:30}, ${size==='large'?0:20})">
+            square: `<g transform="scale(${scale}) translate(${size==='large'?0:30}, ${size==='large'?0:20})">
                   <rect x="28" y="28" width="82" height="64" rx="4" ry="4" fill="${c}" fill-opacity="${lensOpacity}" stroke="${c}" stroke-width="${sw}"/>
                   <rect x="130" y="28" width="82" height="64" rx="4" ry="4" fill="${c}" fill-opacity="${lensOpacity}" stroke="${c}" stroke-width="${sw}"/>
                   <path d="M110 58 Q120 50 130 58" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round"/>
                   <line x1="28" y1="42" x2="-16" y2="50" stroke="${c}" stroke-width="${sw-1}" stroke-linecap="round"/>
                   <line x1="212" y1="42" x2="256" y2="50" stroke="${c}" stroke-width="${sw-1}" stroke-linecap="round"/>
                 </g>`,
-            aviator: `
-                <g transform="scale(${scale}) translate(${size==='large'?0:30}, ${size==='large'?0:20})">
-                  <!-- Teardrop aviator shape -->
+            aviator: `<g transform="scale(${scale}) translate(${size==='large'?0:30}, ${size==='large'?0:20})">
                   <path d="M32 36 Q32 10 70 10 Q108 10 108 44 Q108 76 70 82 Q32 76 32 44 Z" fill="${c}" fill-opacity="${lensOpacity}" stroke="${c}" stroke-width="${sw}"/>
                   <path d="M132 36 Q132 10 170 10 Q208 10 208 44 Q208 76 170 82 Q132 76 132 44 Z" fill="${c}" fill-opacity="${lensOpacity}" stroke="${c}" stroke-width="${sw}"/>
                   <path d="M108 38 Q120 28 132 38" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round"/>
-                  <!-- Brow bar -->
                   <path d="M32 28 Q120 14 208 28" fill="none" stroke="${c}" stroke-width="${sw-1}" stroke-linecap="round"/>
                   <line x1="32" y1="36" x2="-12" y2="44" stroke="${c}" stroke-width="${sw-1}" stroke-linecap="round"/>
                   <line x1="208" y1="36" x2="252" y2="44" stroke="${c}" stroke-width="${sw-1}" stroke-linecap="round"/>
@@ -314,7 +285,18 @@
         </svg>`;
     }
 
-    // ─── NAVIGATION ────────────────────────────────────────
+    // Build the product visual: real image if available, SVG otherwise
+    function buildProductVisual(product, size = 'large') {
+        if (product.imageUrl) {
+            const h = size === 'large' ? 'h-64' : 'h-full';
+            return `<img src="${product.imageUrl}" alt="${product.name}"
+                        class="product-img"
+                        onerror="this.parentElement.innerHTML=\`${buildFrameSVG(product, size).replace(/`/g,'\\`')}\`">`;
+        }
+        return buildFrameSVG(product, size);
+    }
+
+    // ─── NAVIGATION ───────────────────────────────────────
     function navigateTo(pageId) {
         appState.currentPage = pageId;
         const contentDiv = document.getElementById('app-content');
@@ -344,30 +326,35 @@
         }
     }
 
-    // ─── PRODUCT DETAIL MODAL ──────────────────────────────
+    // ─── PRODUCT DETAIL MODAL ─────────────────────────────
     function openProductModal(productId) {
         const product = products.find(p => p.id === productId);
         if (!product) return;
 
-        // Populate visual
-        document.getElementById('modal-visual').innerHTML = buildFrameSVG(product, 'large');
+        // Visual — real image or SVG
+        const visualDiv = document.getElementById('modal-visual');
+        if (product.imageUrl) {
+            visualDiv.innerHTML = `<img src="${product.imageUrl}" alt="${product.name}"
+                class="w-full h-full object-contain p-6"
+                onerror="this.parentElement.innerHTML='${buildFrameSVG(product, 'large').replace(/'/g, "\\'")}'">`;
+        } else {
+            visualDiv.innerHTML = buildFrameSVG(product, 'large');
+        }
 
-        // Populate text
-        document.getElementById('modal-brand').textContent = product.brand;
-        document.getElementById('modal-name').textContent = product.name;
-        document.getElementById('modal-type-color').textContent = `${product.color} · ${product.type}`;
-        document.getElementById('modal-price').textContent = `$${product.price}`;
-        document.getElementById('modal-desc').textContent = productDescriptions[product.id] || '';
+        document.getElementById('modal-brand').textContent        = product.brand;
+        document.getElementById('modal-name').textContent         = product.name;
+        document.getElementById('modal-type-color').textContent   = `${product.color} · ${product.type}`;
+        document.getElementById('modal-price').textContent        = product.price ? `$${product.price}` : 'Price on request';
+        document.getElementById('modal-desc').textContent         = productDescriptions[product.id] || '';
 
-        // Specs grid
         document.getElementById('modal-specs').innerHTML = `
             <div class="bg-luxury-secondary/40 rounded p-3">
                 <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Material</p>
-                <p class="text-sm font-semibold text-luxury-primary">${product.material}</p>
+                <p class="text-sm font-semibold text-luxury-primary">${product.material || '—'}</p>
             </div>
             <div class="bg-luxury-secondary/40 rounded p-3">
                 <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Weight</p>
-                <p class="text-sm font-semibold text-luxury-primary">${product.weight}g</p>
+                <p class="text-sm font-semibold text-luxury-primary">${product.weight ? product.weight + 'g' : '—'}</p>
             </div>
             <div class="bg-luxury-secondary/40 rounded p-3">
                 <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Type</p>
@@ -379,37 +366,37 @@
             </div>
         `;
 
-        // Wire up Add to Cart button
-        const btn = document.getElementById('modal-add-btn');
-        btn.onclick = () => { addToCart(product.id); closeProductModal(); };
+        // Source link (for scraped products)
+        const linkEl = document.getElementById('modal-source-link');
+        if (product.sourceUrl && !product.manual) {
+            linkEl.href = product.sourceUrl;
+            linkEl.classList.remove('hidden');
+        } else {
+            linkEl.classList.add('hidden');
+        }
 
-        // Show modal
+        document.getElementById('modal-add-btn').onclick = () => { addToCart(product.id); closeProductModal(); };
+
         const modal = document.getElementById('product-modal');
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
 
     function closeProductModal() {
-        const modal = document.getElementById('product-modal');
-        modal.classList.add('hidden');
+        document.getElementById('product-modal').classList.add('hidden');
         document.body.style.overflow = '';
     }
-
     function closeModal(e) {
-        // Only close if clicking the backdrop area (not the panel)
         if (e.target === document.getElementById('product-modal') ||
             e.target.classList.contains('absolute')) {
             closeProductModal();
         }
     }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeProductModal(); });
 
-    // Close with Escape key
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') closeProductModal();
-    });
-
-    // ─── PAGE RENDERERS ────────────────────────────────────
+    // ─── PAGE RENDERERS ───────────────────────────────────
     function renderHome(container) {
+        const highlights = products.slice(0, 3);
         container.innerHTML = `
             <section class="relative bg-luxury-secondary rounded-xl overflow-hidden shadow-lg mb-16 fade-in">
                 <div class="absolute inset-0 bg-gradient-to-r from-luxury-primary/10 to-transparent"></div>
@@ -441,7 +428,7 @@
                     <button onclick="navigateTo('shop')" class="text-luxury-accent hover:text-luxury-primary font-bold text-sm tracking-wide border-b border-luxury-accent pb-1">VIEW ALL</button>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    ${products.slice(0, 3).map(p => createProductCard(p)).join('')}
+                    ${highlights.map(p => createProductCard(p)).join('')}
                 </div>
             </section>
 
@@ -455,72 +442,120 @@
         `;
     }
 
+    // ─── SHOP RENDERER ────────────────────────────────────
     function renderShop(container) {
-        let filteredProducts = products.filter(p =>
+        let filtered = products.filter(p =>
             (appState.filters.brand === 'All' || p.brand === appState.filters.brand) &&
             (appState.filters.color === 'All' || p.color === appState.filters.color) &&
             (appState.filters.type  === 'All' || p.type  === appState.filters.type)
         );
 
-        if (appState.sortBy === 'priceAsc')  filteredProducts.sort((a,b) => a.price - b.price);
-        if (appState.sortBy === 'priceDesc') filteredProducts.sort((a,b) => b.price - a.price);
-        if (appState.sortBy === 'az')        filteredProducts.sort((a,b) => a.name.localeCompare(b.name));
+        if (appState.sortBy === 'priceAsc')  filtered.sort((a,b) => a.price - b.price);
+        if (appState.sortBy === 'priceDesc') filtered.sort((a,b) => b.price - a.price);
+        if (appState.sortBy === 'az')        filtered.sort((a,b) => a.name.localeCompare(b.name));
 
         const brands = ['All', ...new Set(products.map(p => p.brand))];
         const colors = ['All', ...new Set(products.map(p => p.color))];
         const types  = ['All', ...new Set(products.map(p => p.type))];
 
+        const productGridHTML = appState.groupByBrand
+            ? renderByBrand(filtered)
+            : renderFlatGrid(filtered);
+
         container.innerHTML = `
-            <div class="mb-8 text-center fade-in px-4">
-                <h1 class="text-3xl md:text-4xl font-serif text-luxury-primary mb-4">The Collection</h1>
-                <p class="text-luxury-text max-w-2xl mx-auto text-sm md:text-base">Browse our extensive catalog of premium eyewear. Use the filters below to refine your search.</p>
-            </div>
-            <div class="flex flex-col lg:flex-row gap-8 fade-in">
-                <div class="lg:hidden px-4 w-full">
-                    <button onclick="toggleMobileFilters()" class="w-full border border-luxury-primary text-luxury-primary py-3 text-sm uppercase font-bold flex justify-center items-center gap-2 hover:bg-luxury-primary hover:text-white transition-colors duration-300 rounded-sm">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-                        <span>Filters &amp; Sort</span>
+            <div class="mb-8 fade-in">
+                <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-2">
+                    <div>
+                        <h1 class="text-3xl md:text-4xl font-serif text-luxury-primary mb-2">The Collection</h1>
+                        <p class="text-luxury-text text-sm">Browse our full catalogue. Use filters to refine.</p>
+                    </div>
+                    <!-- Sync Collection button -->
+                    <button id="syncBtn" onclick="triggerScrape()"
+                        class="flex items-center gap-2 border border-luxury-accent text-luxury-accent px-5 py-2.5 text-sm font-bold tracking-wide hover:bg-luxury-accent hover:text-white transition-all duration-300 rounded-sm self-start md:self-auto">
+                        <svg id="syncIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        SYNC COLLECTION
                     </button>
                 </div>
-                <aside id="shopFilters" class="hidden lg:block w-full lg:w-1/4 bg-white p-6 rounded-lg shadow-sm h-fit sticky top-24 border border-luxury-secondary lg:border-none mx-4 lg:mx-0">
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8 fade-in">
+                <!-- Mobile filter toggle -->
+                <div class="lg:hidden w-full">
+                    <button onclick="toggleMobileFilters()" class="w-full border border-luxury-primary text-luxury-primary py-3 text-sm uppercase font-bold flex justify-center items-center gap-2 hover:bg-luxury-primary hover:text-white transition-colors duration-300 rounded-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                        Filters &amp; Sort
+                    </button>
+                </div>
+
+                <!-- Sidebar -->
+                <aside id="shopFilters" class="hidden lg:block w-full lg:w-1/4 bg-white p-6 rounded-lg shadow-sm h-fit sticky top-24 border border-luxury-secondary lg:border-none">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="font-bold tracking-widest uppercase text-sm">Filters</h3>
                         <button onclick="resetFilters()" class="text-xs text-luxury-accent hover:underline">Reset</button>
                     </div>
+
+                    <!-- Brand filter -->
                     <div class="mb-6">
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Brand</label>
-                        <select onchange="updateFilter('brand', this.value)" class="w-full bg-luxury-base border border-gray-200 rounded p-2 text-sm focus:border-luxury-accent outline-none">
+                        <select onchange="updateFilter('brand', this.value)"
+                            class="w-full bg-luxury-base border border-gray-200 rounded p-2 text-sm focus:border-luxury-accent outline-none">
                             ${brands.map(b => `<option value="${b}" ${appState.filters.brand===b?'selected':''}>${b}</option>`).join('')}
                         </select>
                     </div>
+
+                    <!-- Type filter -->
                     <div class="mb-6">
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Type</label>
                         <div class="space-y-2">
-                            ${types.map(t => `<label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="type" value="${t}" onchange="updateFilter('type', this.value)" ${appState.filters.type===t?'checked':''} class="text-luxury-accent"><span class="text-sm">${t}</span></label>`).join('')}
+                            ${types.map(t => `<label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="radio" name="type" value="${t}" onchange="updateFilter('type', this.value)" ${appState.filters.type===t?'checked':''} class="text-luxury-accent">
+                                <span class="text-sm">${t}</span>
+                            </label>`).join('')}
                         </div>
                     </div>
+
+                    <!-- Color filter -->
                     <div class="mb-6">
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Color</label>
                         <div class="flex flex-wrap gap-2">
-                            ${colors.filter(c=>c!=='All').map(c => `<button onclick="updateFilter('color','${appState.filters.color===c?'All':c}')" class="w-6 h-6 rounded-full border ${appState.filters.color===c?'ring-2 ring-luxury-accent ring-offset-2':'border-gray-200'}" style="background-color:${getColorHex(c)}" title="${c}"></button>`).join('')}
+                            ${colors.filter(c=>c!=='All').map(c => `
+                                <button onclick="updateFilter('color','${appState.filters.color===c?'All':c}')"
+                                    class="w-6 h-6 rounded-full border ${appState.filters.color===c?'ring-2 ring-luxury-accent ring-offset-2':'border-gray-200'}"
+                                    style="background-color:${getColorHex(c)}" title="${c}">
+                                </button>`).join('')}
                         </div>
                     </div>
-                    <div class="pt-6 border-t border-gray-100">
+
+                    <!-- Sort -->
+                    <div class="pt-6 border-t border-gray-100 mb-6">
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Sort By</label>
-                        <select onchange="updateSort(this.value)" class="w-full bg-luxury-base border border-gray-200 rounded p-2 text-sm">
+                        <select onchange="updateSort(this.value)"
+                            class="w-full bg-luxury-base border border-gray-200 rounded p-2 text-sm">
                             <option value="featured" ${appState.sortBy==='featured'?'selected':''}>Featured</option>
                             <option value="priceAsc" ${appState.sortBy==='priceAsc'?'selected':''}>Price: Low to High</option>
                             <option value="priceDesc" ${appState.sortBy==='priceDesc'?'selected':''}>Price: High to Low</option>
                             <option value="az" ${appState.sortBy==='az'?'selected':''}>Name: A – Z</option>
                         </select>
                     </div>
+
+                    <!-- Group by brand toggle -->
+                    <div class="pt-4 border-t border-gray-100">
+                        <label class="flex items-center justify-between cursor-pointer">
+                            <span class="text-xs font-bold text-gray-500 uppercase">Group by Brand</span>
+                            <div onclick="toggleGroupByBrand()" class="relative w-10 h-5 rounded-full transition-colors duration-300 ${appState.groupByBrand ? 'bg-luxury-accent' : 'bg-gray-300'}">
+                                <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-300 ${appState.groupByBrand ? 'translate-x-5' : ''}"></div>
+                            </div>
+                        </label>
+                    </div>
                 </aside>
-                <div class="w-full lg:w-3/4 px-4 lg:px-0">
-                    <div class="mb-4 text-sm text-gray-500">Showing <span class="font-bold text-luxury-primary">${filteredProducts.length}</span> results</div>
-                    ${filteredProducts.length > 0 ? `
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            ${filteredProducts.map(p => createProductCard(p)).join('')}
-                        </div>` : `
+
+                <!-- Product area -->
+                <div class="w-full lg:w-3/4">
+                    <div class="mb-4 text-sm text-gray-500">Showing <span class="font-bold text-luxury-primary">${filtered.length}</span> results</div>
+                    ${filtered.length > 0 ? productGridHTML : `
                         <div class="flex flex-col items-center justify-center h-64 bg-white rounded-lg border border-dashed border-gray-300">
                             <span class="text-4xl mb-4 text-gray-300">☹</span>
                             <h3 class="text-lg font-medium text-gray-600">No frames match your criteria.</h3>
@@ -531,6 +566,64 @@
         `;
     }
 
+    // Flat grid (original layout)
+    function renderFlatGrid(items) {
+        return `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            ${items.map(p => createProductCard(p)).join('')}
+        </div>`;
+    }
+
+    // Grouped by brand
+    function renderByBrand(items) {
+        const brandMap = {};
+        items.forEach(p => {
+            if (!brandMap[p.brand]) brandMap[p.brand] = [];
+            brandMap[p.brand].push(p);
+        });
+
+        return Object.entries(brandMap).map(([brand, brandProducts]) => `
+            <div class="mb-14">
+                <div class="brand-section-header mb-6">
+                    <h2 class="font-serif text-2xl text-luxury-primary">${brand}</h2>
+                    <p class="text-xs text-gray-400 mt-1">${brandProducts.length} frame${brandProducts.length!==1?'s':''}</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    ${brandProducts.map(p => createProductCard(p)).join('')}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ─── SYNC / SCRAPE TRIGGER ────────────────────────────
+    async function triggerScrape() {
+        const btn  = document.getElementById('syncBtn');
+        const icon = document.getElementById('syncIcon');
+        if (!btn) return;
+
+        btn.disabled = true;
+        btn.innerHTML = `<svg class="w-4 h-4 spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg> SYNCING...`;
+
+        try {
+            const res  = await fetch('http://localhost:3000/api/scrape', { method: 'POST' });
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+            products = data.products;
+            showInfoToast(`✅ Synced ${data.count} products from all brands.`);
+            renderShop(document.getElementById('app-content'));
+        } catch (err) {
+            showInfoToast('⚠️ Sync failed: ' + err.message);
+            btn.disabled = false;
+            btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg> SYNC COLLECTION`;
+        }
+    }
+
+    // ─── ABOUT, CART, STYLIST (unchanged logic) ───────────
     function renderAbout(container) {
         container.innerHTML = `
             <div class="max-w-4xl mx-auto fade-in">
@@ -559,8 +652,7 @@
                         <div><div class="text-3xl mb-2">♥</div><h4 class="font-bold text-sm uppercase mb-2">Care</h4><p class="text-sm text-gray-600">Lifetime adjustments and comprehensive fitting support.</p></div>
                     </div>
                 </div>
-            </div>
-        `;
+            </div>`;
     }
 
     function renderCart(container) {
@@ -573,8 +665,7 @@
                 </div>`;
             return;
         }
-
-        const subtotal = appState.cart.reduce((s, i) => s + i.price, 0);
+        const subtotal = appState.cart.reduce((s, i) => s + (i.price || 0), 0);
         container.innerHTML = `
             <div class="max-w-5xl mx-auto fade-in">
                 <h1 class="text-3xl md:text-4xl font-serif text-luxury-primary mb-10 text-center">Your Selection</h1>
@@ -582,8 +673,10 @@
                     <div class="w-full lg:w-2/3">
                         ${appState.cart.map((item, idx) => `
                             <div class="flex items-center gap-6 border-b border-luxury-secondary py-6 fade-in">
-                                <div class="w-24 h-24 bg-gray-50 flex items-center justify-center rounded border border-gray-100 flex-shrink-0 p-2">
-                                    ${buildFrameSVG(item, 'small')}
+                                <div class="w-24 h-24 bg-gray-50 flex items-center justify-center rounded border border-gray-100 flex-shrink-0 p-2 overflow-hidden">
+                                    ${item.imageUrl
+                                        ? `<img src="${item.imageUrl}" alt="${item.name}" class="object-contain w-full h-full">`
+                                        : buildFrameSVG(item, 'small')}
                                 </div>
                                 <div class="flex-grow">
                                     <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">${item.brand}</span>
@@ -591,7 +684,7 @@
                                     <p class="text-sm text-gray-500">${item.color} | ${item.type}</p>
                                 </div>
                                 <div class="text-right flex-shrink-0">
-                                    <p class="font-medium text-lg">$${item.price}</p>
+                                    <p class="font-medium text-lg">${item.price ? '$' + item.price : '—'}</p>
                                     <button onclick="removeFromCart(${idx})" class="text-xs text-red-500 uppercase tracking-widest mt-2 hover:underline">Remove</button>
                                 </div>
                             </div>`).join('')}
@@ -610,19 +703,17 @@
             </div>`;
     }
 
-    // ─── STYLIST PAGE ──────────────────────────────────────
-    // Prompt chips definition
+    // ─── STYLIST ──────────────────────────────────────────
     const stylistChips = [
-        { label: 'Round face', text: 'I have a round face and want frames that add structure and definition.' },
-        { label: 'Square face', text: 'I have a square jawline and am looking for something that softens my features.' },
+        { label: 'Round face',          text: 'I have a round face and want frames that add structure and definition.' },
+        { label: 'Square face',         text: 'I have a square jawline and am looking for something that softens my features.' },
         { label: 'Minimal & understated', text: 'I prefer minimal, understated frames — nothing too flashy, just refined and quiet.' },
-        { label: 'Bold statement', text: 'I want bold, statement eyewear that turns heads. Confident and distinctive.' },
-        { label: 'Professional setting', text: 'I work in a corporate environment and need something polished and professional.' },
-        { label: 'Creative industry', text: 'I work in a creative field and want frames that reflect personality and originality.' },
-        { label: 'Ultra lightweight', text: 'Comfort is my priority — I want the lightest frame possible for all-day wear.' },
-        { label: 'Classic & timeless', text: 'I prefer a classic, timeless aesthetic that will never go out of style.' },
+        { label: 'Bold statement',      text: 'I want bold, statement eyewear that turns heads. Confident and distinctive.' },
+        { label: 'Professional setting',text: 'I work in a corporate environment and need something polished and professional.' },
+        { label: 'Creative industry',   text: 'I work in a creative field and want frames that reflect personality and originality.' },
+        { label: 'Ultra lightweight',   text: 'Comfort is my priority — I want the lightest frame possible for all-day wear.' },
+        { label: 'Classic & timeless',  text: 'I prefer a classic, timeless aesthetic that will never go out of style.' },
     ];
-
     let activeChips = new Set();
 
     function renderStylist(container) {
@@ -632,45 +723,26 @@
                     <h1 class="text-4xl font-serif text-luxury-primary mb-4 flex justify-center items-center gap-3">
                         <span class="text-luxury-accent">✨</span> Personal AI Stylist
                     </h1>
-                    <p class="text-luxury-text max-w-2xl mx-auto">
-                        Describe your facial features, personal style, and what you're looking for. 
-                        Our AI will curate the perfect frames from our collection just for you.
-                    </p>
+                    <p class="text-luxury-text max-w-2xl mx-auto">Describe your facial features, personal style, and what you're looking for. Our AI will curate the perfect frames from our collection just for you.</p>
                 </div>
-
                 <div class="bg-white p-8 rounded-lg shadow-sm border border-luxury-secondary mb-10">
-
-                    <!-- ── Prompt Chips ── -->
                     <div class="mb-5">
                         <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Quick starters — tap to add</p>
                         <div class="flex flex-wrap gap-2" id="chip-container">
-                            ${stylistChips.map((chip, i) => `
-                                <button 
-                                    class="prompt-chip" 
-                                    data-index="${i}"
-                                    onclick="toggleChip(${i})"
-                                >${chip.label}</button>
-                            `).join('')}
+                            ${stylistChips.map((chip, i) => `<button class="prompt-chip" data-index="${i}" onclick="toggleChip(${i})">${chip.label}</button>`).join('')}
                         </div>
                     </div>
-
                     <div class="w-full h-px bg-luxury-secondary mb-5"></div>
-
-                    <textarea id="stylePrompt" rows="4" 
-                        class="w-full bg-luxury-base border border-gray-200 rounded p-4 text-sm focus:border-luxury-accent focus:ring-1 focus:ring-luxury-accent outline-none transition-all resize-none mb-4" 
+                    <textarea id="stylePrompt" rows="4"
+                        class="w-full bg-luxury-base border border-gray-200 rounded p-4 text-sm focus:border-luxury-accent focus:ring-1 focus:ring-luxury-accent outline-none transition-all resize-none mb-4"
                         placeholder="E.g., I have a square face and I work in a creative agency. I want something bold but professional, preferably in a dark color..."></textarea>
-
-                    <button id="stylistBtn" onclick="handleStyleSubmit()" 
+                    <button id="stylistBtn" onclick="handleStyleSubmit()"
                         class="w-full bg-luxury-primary text-white py-4 font-bold tracking-wider hover:bg-luxury-accent transition-colors duration-300 flex justify-center items-center gap-2">
                         <span>DISCOVER MY FRAMES</span> <span class="text-xl">✨</span>
                     </button>
                 </div>
-
                 <div id="stylistResults" class="hidden"></div>
-            </div>
-        `;
-
-        // Restore chip state if user navigated away and back
+            </div>`;
         activeChips.forEach(i => {
             const btn = document.querySelector(`.prompt-chip[data-index="${i}"]`);
             if (btn) btn.classList.add('active');
@@ -678,33 +750,23 @@
     }
 
     function toggleChip(index) {
-        const chip = stylistChips[index];
-        const btn = document.querySelector(`.prompt-chip[data-index="${index}"]`);
+        const btn      = document.querySelector(`.prompt-chip[data-index="${index}"]`);
         const textarea = document.getElementById('stylePrompt');
-
         if (activeChips.has(index)) {
-            // Remove this chip's text from textarea
             activeChips.delete(index);
             btn.classList.remove('active');
-
-            // Rebuild textarea from remaining active chips + any custom text
             rebuildTextarea(textarea);
         } else {
             activeChips.add(index);
             btn.classList.add('active');
-
-            // Append this chip's text
             const current = textarea.value.trim();
-            textarea.value = current ? current + ' ' + chip.text : chip.text;
+            textarea.value = current ? current + ' ' + stylistChips[index].text : stylistChips[index].text;
         }
     }
-
     function rebuildTextarea(textarea) {
-        const texts = [...activeChips].map(i => stylistChips[i].text);
-        textarea.value = texts.join(' ');
+        textarea.value = [...activeChips].map(i => stylistChips[i].text).join(' ');
     }
 
-    // ─── STYLIST SUBMIT ────────────────────────────────────
     async function handleStyleSubmit() {
         const promptInput = document.getElementById('stylePrompt').value;
         const resultsDiv  = document.getElementById('stylistResults');
@@ -718,12 +780,12 @@
 
         try {
             const inventoryJSON = JSON.stringify(products.map(p => ({ id: p.id, brand: p.brand, name: p.name, type: p.type, color: p.color, material: p.material })));
-            const combinedPrompt = `You are an elite, high-end eyewear stylist at Lumina Optics. 
+            const combinedPrompt = `You are an elite, high-end eyewear stylist at Lumina Optics.
 Based on the user's description of their style, face shape, and needs, select 2 to 3 frames from our inventory that fit them best.
 Inventory: ${inventoryJSON}
 User Request: ${promptInput}
 
-IMPORTANT: You must respond ONLY with a valid JSON object. Do not include markdown formatting. 
+IMPORTANT: You must respond ONLY with a valid JSON object. Do not include markdown formatting.
 The JSON must match this structure exactly:
 {
     "introMessage": "Your luxurious, confident intro message explaining the vibe.",
@@ -737,7 +799,6 @@ The JSON must match this structure exactly:
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userPrompt: combinedPrompt })
             });
-
             const data = await response.json();
             if (data.error) throw new Error(data.error);
 
@@ -773,28 +834,29 @@ The JSON must match this structure exactly:
         }
     }
 
-    // ─── PRODUCT CARD ──────────────────────────────────────
+    // ─── PRODUCT CARD ─────────────────────────────────────
     function createProductCard(product) {
+        const visual = product.imageUrl
+            ? `<img src="${product.imageUrl}" alt="${product.name}"
+                    class="product-img"
+                    onerror="this.onerror=null; this.parentElement.innerHTML=\`${buildFrameSVG(product,'small').replace(/`/g,'\\`')}\`">`
+            : buildFrameSVG(product, 'small');
+
         return `
             <div class="group bg-white rounded-lg border border-luxury-secondary overflow-hidden hover:shadow-lg transition-all duration-300">
                 <div class="h-56 w-full flex items-center justify-center relative overflow-hidden bg-gray-50 cursor-pointer" onclick="openProductModal(${product.id})">
-                    <div class="transition-transform duration-500 transform group-hover:scale-105 w-full h-full flex items-center justify-center p-6">
-                        ${buildFrameSVG(product, 'small')}
-                    </div>
-                    <!-- Quick View overlay -->
+                    <div class="w-full h-full flex items-center justify-center">${visual}</div>
                     <div class="absolute inset-0 bg-luxury-primary/0 group-hover:bg-luxury-primary/10 transition-colors duration-300 flex items-end justify-center pb-4">
-                        <span class="bg-luxury-primary text-white text-xs px-4 py-2 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0 transform transition-transform">
-                            Quick View
-                        </span>
+                        <span class="bg-luxury-primary text-white text-xs px-4 py-2 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0 transform transition-transform">Quick View</span>
                     </div>
                 </div>
                 <div class="p-6">
                     <div class="flex justify-between items-start mb-2">
                         <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">${product.brand}</span>
-                        <span class="text-sm font-medium text-luxury-accent">$${product.price}</span>
+                        <span class="text-sm font-medium text-luxury-accent">${product.price ? '$' + product.price : '—'}</span>
                     </div>
                     <h3 class="text-lg font-serif font-bold text-luxury-primary mb-1 cursor-pointer hover:text-luxury-accent transition-colors" onclick="openProductModal(${product.id})">${product.name}</h3>
-                    <p class="text-sm text-gray-500 mb-4">${product.color} | ${product.material}</p>
+                    <p class="text-sm text-gray-500 mb-4">${product.color} | ${product.material || ''}</p>
                     <button onclick="addToCart(${product.id})" class="w-full border border-luxury-primary text-luxury-primary py-2 text-sm uppercase font-bold hover:bg-luxury-primary hover:text-white transition-colors duration-300">
                         Add to Cart
                     </button>
@@ -802,22 +864,16 @@ The JSON must match this structure exactly:
             </div>`;
     }
 
-    // ─── CART LOGIC ────────────────────────────────────────
+    // ─── CART LOGIC ───────────────────────────────────────
     function addToCart(productId) {
         const product = products.find(p => p.id === productId);
-        if (product) {
-            appState.cart.push(product);
-            updateCartCount();
-            showToast(product);
-        }
+        if (product) { appState.cart.push(product); updateCartCount(); showToast(product); }
     }
-
     function removeFromCart(index) {
         appState.cart.splice(index, 1);
         updateCartCount();
         renderCart(document.getElementById('app-content'));
     }
-
     function updateCartCount() {
         document.querySelectorAll('.cart-count-badge').forEach(badge => {
             badge.innerText = appState.cart.length;
@@ -836,10 +892,11 @@ The JSON must match this structure exactly:
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
         toast.className = 'bg-luxury-primary text-white p-4 rounded-sm shadow-2xl flex items-center gap-4 transform transition-all duration-500 translate-y-10 opacity-0 min-w-[300px] border-l-4 border-luxury-accent';
+        const thumbHTML = product.imageUrl
+            ? `<img src="${product.imageUrl}" class="w-12 h-12 object-contain rounded" alt="${product.name}">`
+            : `<div class="w-12 h-12 bg-white rounded flex items-center justify-center flex-shrink-0 p-1">${buildFrameSVG(product, 'small')}</div>`;
         toast.innerHTML = `
-            <div class="w-12 h-12 bg-white rounded flex items-center justify-center flex-shrink-0 p-1">
-                ${buildFrameSVG(product, 'small')}
-            </div>
+            ${thumbHTML}
             <div class="flex-grow">
                 <p class="text-[10px] uppercase tracking-widest text-luxury-accent font-bold mb-1">Added to Cart</p>
                 <p class="font-serif text-sm">${product.name}</p>
@@ -847,13 +904,20 @@ The JSON must match this structure exactly:
             <button onclick="navigateTo('cart'); this.parentElement.remove()" class="text-xs font-bold underline hover:text-luxury-accent transition-colors ml-4 uppercase tracking-wider">View</button>`;
         container.appendChild(toast);
         requestAnimationFrame(() => toast.classList.remove('translate-y-10', 'opacity-0'));
-        setTimeout(() => {
-            toast.classList.add('opacity-0', 'translate-y-2');
-            setTimeout(() => toast.remove(), 500);
-        }, 4000);
+        setTimeout(() => { toast.classList.add('opacity-0', 'translate-y-2'); setTimeout(() => toast.remove(), 500); }, 4000);
     }
 
-    // ─── HELPERS ───────────────────────────────────────────
+    function showInfoToast(message) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'bg-luxury-primary text-white p-4 rounded-sm shadow-2xl transform transition-all duration-500 translate-y-10 opacity-0 min-w-[300px] border-l-4 border-luxury-accent text-sm font-medium';
+        toast.textContent = message;
+        container.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.remove('translate-y-10', 'opacity-0'));
+        setTimeout(() => { toast.classList.add('opacity-0', 'translate-y-2'); setTimeout(() => toast.remove(), 500); }, 5000);
+    }
+
+    // ─── HELPERS ──────────────────────────────────────────
     function getColorHex(colorName) {
         return { Black: '#000000', Gold: '#D4AF37', Tortoise: '#5C4033', Silver: '#C0C0C0', Blue: '#1E3A8A' }[colorName] || '#CCCCCC';
     }
@@ -861,9 +925,11 @@ The JSON must match this structure exactly:
     function updateSort(value) { appState.sortBy = value; renderShop(document.getElementById('app-content')); }
     function resetFilters() { appState.filters = { brand: 'All', color: 'All', type: 'All' }; appState.sortBy = 'featured'; renderShop(document.getElementById('app-content')); }
     function toggleMobileFilters() { document.getElementById('shopFilters').classList.toggle('hidden'); }
+    function toggleGroupByBrand() { appState.groupByBrand = !appState.groupByBrand; renderShop(document.getElementById('app-content')); }
 
-    // ─── INIT ──────────────────────────────────────────────
-    window.onload = function() {
+    // ─── INIT ─────────────────────────────────────────────
+    window.onload = async function() {
+        await loadProducts();
         updateCartCount();
         renderPage('home');
     };
